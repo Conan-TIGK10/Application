@@ -174,11 +174,13 @@ public class BluetoothHandler implements Runnable {
     }
     
     private void closeConnection() {
-        try {
-            this.deviceConnected = false;
-            this.bluetoothSocket.close();
-        } catch (IOException e) {
-            Log.e("BT", "Error:" + e.getMessage());
+        if (this.deviceConnected){
+            try {
+                this.deviceConnected = false;
+                this.bluetoothSocket.close();
+            } catch (IOException e) {
+                Log.e("BT", "Error:" + e.getMessage());
+            }
         }
     }
     
