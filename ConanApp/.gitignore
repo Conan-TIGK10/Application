@@ -119,3 +119,4 @@ app/build/intermediates/transforms/
 app/build/intermediates/validate_signing_config/
 app/build/outputs/apk/
 app/build/tmp/
+.idea/saveactions_settings.xml

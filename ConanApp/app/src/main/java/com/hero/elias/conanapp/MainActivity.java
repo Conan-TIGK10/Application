@@ -8,8 +8,18 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity implements BluetoothCallback, View.OnClickListener  {
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
+
+public class MainActivity extends AppCompatActivity implements BluetoothHandler.BluetoothCallback, View.OnClickListener  {
     
     Button sendButton;
     TextView receiveTextView;
@@ -26,9 +36,19 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
         
         BluetoothHandler.getInstance().setMainActivity(this);
         BluetoothHandler.getInstance().addCallback(this);
+        
+        WifiHandler.GetPosition(new WifiHandler.PositionGetListener() {
+            @Override
+            public void onFinished(double x, double y) {
+                Log.i("MSG", String.valueOf(x));
+                Log.i("MSG", String.valueOf(y));
+            }
+        });
+        
+        //WifiHandler.PostPosition(3.1, 4.2);
+        
     }
-    
-    
+                
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -44,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
     @Override
     protected void onResume() {
         super.onResume();
-        BluetoothHandler.getInstance().startThread();
+        //BluetoothHandler.getInstance().startThread();
     }
     
     @Override
@@ -58,3 +78,4 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
         BluetoothHandler.getInstance().write(message.getBytes());
     }
 }
+

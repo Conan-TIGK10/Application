@@ -20,6 +20,12 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class BluetoothHandler implements Runnable {
+    
+    
+    interface BluetoothCallback {
+        void bluetoothMessage(String message);
+    }
+    
     private static BluetoothHandler sSoleInstance;
     
     BroadcastReceiver bluetoothReceiver = new BroadcastReceiver() {
@@ -228,19 +234,31 @@ public class BluetoothHandler implements Runnable {
     }
     
     private void bluetoothEnableIntent() {
-        Log.i("BT", "Bluetooth Not Available");
-        Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        this.mainActivity.startActivityForResult(enableBTIntent, 1);
+        if (this.mainActivity != null){
+            Log.i("BT", "Bluetooth Not Available");
+            Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            this.mainActivity.startActivityForResult(enableBTIntent, 1);
+        }else{
+            Log.i("BT", "Main Activity Not Linked");
+        }
     }
     
     private void registerReceivers() {
-        this.mainActivity.registerReceiver(this.bluetoothReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
-        this.mainActivity.registerReceiver(this.bluetoothReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
-        this.mainActivity.registerReceiver(this.bluetoothReceiver, new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED));
-        this.mainActivity.registerReceiver(this.bluetoothReceiver, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
+        if (this.mainActivity != null){
+            this.mainActivity.registerReceiver(this.bluetoothReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+            this.mainActivity.registerReceiver(this.bluetoothReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
+            this.mainActivity.registerReceiver(this.bluetoothReceiver, new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED));
+            this.mainActivity.registerReceiver(this.bluetoothReceiver, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
+        }else{
+            Log.i("BT", "Main Activity Not Linked");
+        }
     }
     
     public void unregisterReceivers() {
-        this.mainActivity.unregisterReceiver(this.bluetoothReceiver);
+        if (this.mainActivity != null){
+            this.mainActivity.unregisterReceiver(this.bluetoothReceiver);
+        }else{
+            Log.i("BT", "Main Activity Not Linked");
+        }
     }
 }
