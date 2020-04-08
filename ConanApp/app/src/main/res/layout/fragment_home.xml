@@ -18,7 +18,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:id="@+id/bluetooth_state_text"
+            android:text="TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="176dp"
+            android:layout_marginEnd="176dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
+
         <FrameLayout
+            android:id="@+id/frameLayout2"
             android:layout_width="wrap_content"
             android:layout_height="94dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -33,7 +46,9 @@
                 app:bluetoothColor="@color/colorPrimary"
                 app:bluetoothState="searching"
                 app:bluetoothTheme="sharp" />
+
         </FrameLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
