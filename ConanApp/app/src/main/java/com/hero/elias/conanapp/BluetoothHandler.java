@@ -22,12 +22,7 @@ import java.util.UUID;
 public class BluetoothHandler implements Runnable {
     
     
-    interface BluetoothCallback {
-        void bluetoothMessage(String message);
-    }
-    
     private static BluetoothHandler sSoleInstance;
-    
     BroadcastReceiver bluetoothReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -48,24 +43,17 @@ public class BluetoothHandler implements Runnable {
             }
         }
     };
-    
     Activity mainActivity;
-    
     Thread bluetoothThread;
-    
     String MAC_ADDRESS = "98:D3:34:90:6F:A1"; // INSERT MBOT MAC ADDRESS
     UUID UUID_ADDRESS = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");  // INSERT CORRECT MBOT UUID ADDRESS
-    
     BluetoothAdapter bluetoothAdapter;
     BluetoothSocket bluetoothSocket;
     BluetoothDevice bluetoothDevice;
-    
     ArrayList<BluetoothCallback> bluetoothCallback;
-    
     InputStream inputStream;
     OutputStream outputStream;
     BufferedReader bufferedReader;
-    
     boolean threadRunning;
     boolean deviceConnected;
     boolean callbackConnected;
@@ -87,6 +75,7 @@ public class BluetoothHandler implements Runnable {
     
     public void setMainActivity(Activity mainActivity) {
         this.mainActivity = mainActivity;
+        this.registerReceivers();
     }
     
     private void discoverDevices() {
@@ -104,7 +93,6 @@ public class BluetoothHandler implements Runnable {
             this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         }
         
-        this.registerReceivers();
         this.printBluetoothDevices();
     }
     
@@ -124,7 +112,9 @@ public class BluetoothHandler implements Runnable {
                     if (this.callbackConnected) {
                         this.executeCallback(text);
                     }
-                } catch (IOException e) { Log.e("BT", "Error:" + e.getMessage());}
+                } catch (IOException e) {
+                    Log.e("BT", "Error:" + e.getMessage());
+                }
             } else {
                 this.connectToMbot();
             }
@@ -160,7 +150,11 @@ public class BluetoothHandler implements Runnable {
             try {
                 this.outputStream.write(bytes);
             } catch (IOException e) {
-                try { this.outputStream.flush(); } catch (IOException ex) { Log.e("BT", "Error:" + e.getMessage());} // clear output
+                try {
+                    this.outputStream.flush();
+                } catch (IOException ex) {
+                    Log.e("BT", "Error:" + e.getMessage());
+                } // clear output
                 Log.e("BT", "Error:" + e.getMessage());
             }
         }
@@ -180,7 +174,7 @@ public class BluetoothHandler implements Runnable {
     }
     
     private void closeConnection() {
-        if (this.deviceConnected){
+        if (this.deviceConnected) {
             try {
                 this.deviceConnected = false;
                 this.bluetoothSocket.close();
@@ -234,31 +228,35 @@ public class BluetoothHandler implements Runnable {
     }
     
     private void bluetoothEnableIntent() {
-        if (this.mainActivity != null){
+        if (this.mainActivity != null) {
             Log.i("BT", "Bluetooth Not Available");
             Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             this.mainActivity.startActivityForResult(enableBTIntent, 1);
-        }else{
+        } else {
             Log.i("BT", "Main Activity Not Linked");
         }
     }
     
     private void registerReceivers() {
-        if (this.mainActivity != null){
+        if (this.mainActivity != null) {
             this.mainActivity.registerReceiver(this.bluetoothReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
             this.mainActivity.registerReceiver(this.bluetoothReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
             this.mainActivity.registerReceiver(this.bluetoothReceiver, new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED));
             this.mainActivity.registerReceiver(this.bluetoothReceiver, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
-        }else{
+        } else {
             Log.i("BT", "Main Activity Not Linked");
         }
     }
     
     public void unregisterReceivers() {
-        if (this.mainActivity != null){
+        if (this.mainActivity != null) {
             this.mainActivity.unregisterReceiver(this.bluetoothReceiver);
-        }else{
+        } else {
             Log.i("BT", "Main Activity Not Linked");
         }
+    }
+    
+    interface BluetoothCallback {
+        void bluetoothMessage(String message);
     }
 }

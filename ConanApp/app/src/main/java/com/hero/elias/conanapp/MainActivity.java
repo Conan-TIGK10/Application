@@ -2,40 +2,51 @@ package com.hero.elias.conanapp;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-
-
-public class MainActivity extends AppCompatActivity implements BluetoothHandler.BluetoothCallback, View.OnClickListener  {
+public class MainActivity extends AppCompatActivity {
     
-    Button sendButton;
-    TextView receiveTextView;
+    BottomNavigationView bottomNavigation;
+    String currentScreen;
+    
+    BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener =
+            new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.navigation_command:
+                            MainActivity.this.openFragment(CommandFragment.newInstance(), "Command");
+                            return true;
+                        case R.id.navigation_home:
+                            MainActivity.this.openFragment(HomeFragment.newInstance(), "Home");
+                            return true;
+                        case R.id.navigation_visualization:
+                            MainActivity.this.openFragment(VisualizationFragment.newInstance(), "Visualization");
+                            return true;
+                    }
+                    return false;
+                }
+            };
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_main);
-    
-        sendButton = (Button) findViewById(R.id.send_button);
-        sendButton.setOnClickListener(this);
+        this.bottomNavigation = findViewById(R.id.bottom_navigation);
+        this.bottomNavigation.setItemIconTintList(null);
         
-        this.receiveTextView = findViewById(R.id.receive_text);
+        this.bottomNavigation.setOnNavigationItemSelectedListener(this.navigationItemSelectedListener);
+        this.openFragment(HomeFragment.newInstance(), "Home");
+        this.currentScreen = "Home";
         
         BluetoothHandler.getInstance().setMainActivity(this);
-        BluetoothHandler.getInstance().addCallback(this);
         
         WifiHandler.GetPosition(new WifiHandler.PositionGetListener() {
             @Override
@@ -46,36 +57,48 @@ public class MainActivity extends AppCompatActivity implements BluetoothHandler.
         });
         
         //WifiHandler.PostPosition(3.1, 4.2);
-        
     }
-                
+    
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         BluetoothHandler.getInstance().unregisterReceivers();
+        super.onDestroy();
+    }
+    
+    public void openFragment(Fragment fragment, String toFragment) {
+        if (this.currentScreen != toFragment){
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+    
+            if (toFragment == "Command"){
+                transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+            }else if (toFragment == "Visualization"){
+                transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+            }else if (toFragment == "Home"){
+                if (this.currentScreen == "Command"){
+                    transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+                }else if(this.currentScreen == "Visualization"){
+                    transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
+                }
+            }
+    
+            this.currentScreen = toFragment;
+    
+            transaction.replace(R.id.bottom_nav_container, fragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
     }
     
     @Override
     protected void onPause() {
-        super.onPause();
         BluetoothHandler.getInstance().stopThread();
+        super.onPause();
     }
     
     @Override
     protected void onResume() {
-        super.onResume();
         //BluetoothHandler.getInstance().startThread();
-    }
-    
-    @Override
-    public void bluetoothMessage(String message) {
-        this.receiveTextView.setText(message);
-    }
-    
-    @Override
-    public void onClick(View v) {
-        String message = "Hello Friend";
-        BluetoothHandler.getInstance().write(message.getBytes());
+        super.onResume();
     }
 }
 
