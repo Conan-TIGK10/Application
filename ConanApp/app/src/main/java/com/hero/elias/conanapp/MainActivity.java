@@ -1,5 +1,6 @@
 package com.hero.elias.conanapp;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -8,29 +9,28 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+import com.hero.elias.conanapp.bluetooth.BluetoothHandler;
+import com.hero.elias.conanapp.mbot.PlaybackSystem;
+import com.hero.elias.conanapp.views.DrawView;
+import com.hero.elias.conanapp.wifi.WifiHandler;
 
 
-public class MainActivity extends AppCompatActivity implements BluetoothHandler.BluetoothCallback, View.OnClickListener  {
+public class MainActivity extends AppCompatActivity implements BluetoothHandler.BluetoothCallback, View.OnClickListener {
     
     Button sendButton;
     TextView receiveTextView;
+    DrawView drawView;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_main);
     
-        sendButton = (Button) findViewById(R.id.send_button);
-        sendButton.setOnClickListener(this);
+        this.drawView = (DrawView) findViewById(R.id.view_draw);
+        this.drawView.setBackgroundColor(Color.WHITE);
+    
+        this.sendButton = (Button) findViewById(R.id.send_button);
+        this.sendButton.setOnClickListener(this);
         
         this.receiveTextView = findViewById(R.id.receive_text);
         
@@ -47,8 +47,11 @@ public class MainActivity extends AppCompatActivity implements BluetoothHandler.
         
         //WifiHandler.PostPosition(3.1, 4.2);
         
+        PlaybackSystem playbackSystem = new PlaybackSystem();
+        playbackSystem.startThread();
+        
     }
-                
+    
     @Override
     protected void onDestroy() {
         super.onDestroy();

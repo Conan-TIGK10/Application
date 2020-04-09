@@ -1,0 +1,3 @@
+<resources>
+    <declare-styleable name="DrawView"></declare-styleable>
+</resources>
