@@ -13,13 +13,9 @@ import java.util.Locale;
 
 public class WifiHandler {
     
-    public interface PositionGetListener {
-        public void onFinished(double x, double y);
-    }
-    
-    public static void GetPosition(PositionGetListener positionListener){
-    
-        new AsyncHTTPGet("http://3.122.218.59/position" ,new AsyncHTTPGet.TaskListener() {
+    public static void GetPosition(PositionGetListener positionListener) {
+        
+        new AsyncHTTPGet("http://3.122.218.59/position", new AsyncHTTPGet.TaskListener() {
             @Override
             public void onFinished(String response) {
                 try {
@@ -33,11 +29,11 @@ public class WifiHandler {
         }).execute();
     }
     
-    public static void PostPosition(double x, double y){
+    public static void PostPosition(double x, double y) {
         Date now = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMANY);
         String date = dateFormat.format(now);
-    
+        
         JSONObject jsonParam = new JSONObject();
         try {
             jsonParam.put("x", x);
@@ -46,13 +42,17 @@ public class WifiHandler {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    
+        
         new AsyncHTTPPost("http://3.122.218.59/position", jsonParam, new AsyncHTTPPost.TaskListener() {
             @Override
             public void onFinished(Integer responseCode) {
-                Log.i("MSG" , String.valueOf(responseCode));
+                Log.i("MSG", String.valueOf(responseCode));
             }
         }).execute();
+        
+    }
     
+    public interface PositionGetListener {
+        public void onFinished(double x, double y);
     }
 }
