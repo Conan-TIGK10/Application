@@ -6,11 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <com.hero.elias.conanapp.MyView
+        android:id="@+id/myView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#00FFFFFF"
+        android:backgroundTint="#00FFFFFF" />
+
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/visualization_imageview"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_gravity="center"
         android:src="@drawable/icons8_graph_128px"
+        android:visibility="invisible"
         app:srcCompat="@drawable/icons8_graph_128px" />
+
 </FrameLayout>
