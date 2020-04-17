@@ -17,13 +17,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.UUID;
 
 public class BluetoothHandler implements Runnable {
     
-    
     private static BluetoothHandler sSoleInstance;
-    BroadcastReceiver bluetoothReceiver = new BroadcastReceiver() {
+    
+    private BroadcastReceiver bluetoothReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
@@ -40,23 +41,36 @@ public class BluetoothHandler implements Runnable {
                 case BluetoothDevice.ACTION_ACL_DISCONNECTED:
                     Log.i("BT", "Device Dissconnected");
                     break;
+                case BluetoothDevice.ACTION_UUID:
+                    Log.i("BT", "Found UUID From : " + device.getName());
+                    if (device.getAddress() == BluetoothHandler.getInstance().getMacAddress()){
+                        UUID uuid = intent.getParcelableExtra(BluetoothDevice.EXTRA_UUID);
+                        Log.i("BT", "UUID: " + uuid.toString());
+                    }
+                    break;
             }
         }
     };
-    Activity mainActivity;
-    Thread bluetoothThread;
-    String MAC_ADDRESS = "98:D3:34:90:6F:A1"; // INSERT MBOT MAC ADDRESS
-    UUID UUID_ADDRESS = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");  // INSERT CORRECT MBOT UUID ADDRESS
-    BluetoothAdapter bluetoothAdapter;
-    BluetoothSocket bluetoothSocket;
-    BluetoothDevice bluetoothDevice;
-    ArrayList<BluetoothCallback> bluetoothCallback;
-    InputStream inputStream;
-    OutputStream outputStream;
-    BufferedReader bufferedReader;
-    boolean threadRunning;
-    boolean deviceConnected;
-    boolean callbackConnected;
+    
+    private Activity mainActivity;
+    private Thread bluetoothThread;
+    
+    private String MAC_ADDRESS = "98:D3:34:90:6F:A1"; // INSERT MBOT MAC ADDRESS
+    private UUID UUID_ADDRESS = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");  // INSERT CORRECT MBOT UUID ADDRESS
+    
+    private BluetoothAdapter bluetoothAdapter;
+    private BluetoothSocket bluetoothSocket;
+    private BluetoothDevice bluetoothDevice;
+    
+    private  ArrayList<BluetoothCallback> bluetoothCallback;
+    
+    private  InputStream inputStream;
+    private  OutputStream outputStream;
+    private  BufferedReader bufferedReader;
+    
+    private  boolean threadRunning;
+    private  boolean deviceConnected;
+    private  boolean callbackConnected;
     
     private BluetoothHandler() {
         this.callbackConnected = false;
@@ -78,6 +92,10 @@ public class BluetoothHandler implements Runnable {
         this.registerReceivers();
     }
     
+    public String getMacAddress(){
+        return this.MAC_ADDRESS;
+    }
+    
     private void discoverDevices() {
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
@@ -93,14 +111,15 @@ public class BluetoothHandler implements Runnable {
             this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         }
         
+        this.discoverDevices();
         this.printBluetoothDevices();
     }
     
     @Override
     public void run() {
         this.init();
-        this.bluetoothAdapter.cancelDiscovery();
-        //this.connectToMbot();
+        //this.bluetoothAdapter.cancelDiscovery();
+        this.connectToMbot();
         
         this.threadRunning = true;
         while (this.threadRunning) {
@@ -108,7 +127,6 @@ public class BluetoothHandler implements Runnable {
                 this.checkConnection();
                 try {
                     String text = this.bufferedReader.readLine(); // Reads a line of text, text ends at \n or \r
-                    
                     if (this.callbackConnected) {
                         this.executeCallback(text);
                     }
@@ -122,7 +140,7 @@ public class BluetoothHandler implements Runnable {
         this.closeConnection();
     }
     
-    public void executeCallback(String text) {
+    private void executeCallback(String text) {
         for (int i = 0; i < this.bluetoothCallback.size(); i++) {
             this.bluetoothCallback.get(i).bluetoothMessage(text);
         }
@@ -141,6 +159,7 @@ public class BluetoothHandler implements Runnable {
     public void startThread() {
         if (!this.bluetoothThread.isAlive()) {
             this.bluetoothThread = new Thread(this, "Bluetooth Thread");
+            this.bluetoothThread.setPriority(Thread.MIN_PRIORITY);
             this.bluetoothThread.start();
         }
     }
@@ -154,7 +173,7 @@ public class BluetoothHandler implements Runnable {
                     this.outputStream.flush();
                 } catch (IOException ex) {
                     Log.e("BT", "Error:" + e.getMessage());
-                } // clear output
+                }
                 Log.e("BT", "Error:" + e.getMessage());
             }
         }
@@ -205,7 +224,6 @@ public class BluetoothHandler implements Runnable {
                 }
             } else {
                 this.bluetoothDevice.createBond();
-                Log.i("BT", "Not Bonded with Mbot");
             }
         } else {
             this.bluetoothEnableIntent();
@@ -214,13 +232,24 @@ public class BluetoothHandler implements Runnable {
     
     private void printBluetoothDevices() {
         if (this.bluetoothAdapter.isEnabled()) {
-            for (BluetoothDevice device : this.bluetoothAdapter.getBondedDevices()) {
-                Log.i("BT", "Device Name : " + device.getName());
-                Log.i("BT", "Device Mac Address : " + device.getAddress());
-                
-                for (ParcelUuid uuid : device.getUuids()) {
-                    Log.i("BT", "Device UUID Address : " + uuid.getUuid());
+            Set<BluetoothDevice> devices = this.bluetoothAdapter.getBondedDevices();
+            if (devices != null){
+                for (BluetoothDevice device : devices) {
+                    Log.i("BT", "Device Name : " + device.getName());
+                    Log.i("BT", "Device Mac Address : " + device.getAddress());
+                    
+                    device.fetchUuidsWithSdp();
+                    ParcelUuid[] uuids = device.getUuids();
+                    if (uuids != null){
+                        for (ParcelUuid uuid :uuids) {
+                            Log.i("BT", "Device UUID Address : " + uuid.getUuid());
+                        }
+                    }else{
+                        Log.i("BT", "No UUID's Found");
+                    }
                 }
+            }else{
+                Log.i("BT", "No Devices Found");
             }
         } else {
             this.bluetoothEnableIntent();
@@ -243,6 +272,7 @@ public class BluetoothHandler implements Runnable {
             this.mainActivity.registerReceiver(this.bluetoothReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
             this.mainActivity.registerReceiver(this.bluetoothReceiver, new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED));
             this.mainActivity.registerReceiver(this.bluetoothReceiver, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
+            this.mainActivity.registerReceiver(this.bluetoothReceiver, new IntentFilter(BluetoothDevice.ACTION_UUID));
         } else {
             Log.i("BT", "Main Activity Not Linked");
         }

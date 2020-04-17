@@ -13,16 +13,15 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class CommandFragment extends Fragment implements BluetoothHandler.BluetoothCallback, View.OnClickListener {
-    Button sendButton;
-    TextView receiveTextView;
+    private Button sendButton;
+    private TextView receiveTextView;
     
     public CommandFragment() {
         BluetoothHandler.getInstance().addCallback(this);
     }
     
     public static CommandFragment newInstance() {
-        CommandFragment fragment = new CommandFragment();
-        return fragment;
+        return new CommandFragment();
     }
     
     @Override
@@ -48,10 +47,11 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
     
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        this.sendButton = (Button) view.findViewById(R.id.send_button);
+        this.sendButton = view.findViewById(R.id.send_button);
         this.sendButton.setOnClickListener(this);
         
         this.receiveTextView = view.findViewById(R.id.receive_text);
+        
         super.onViewCreated(view, savedInstanceState);
     }
     

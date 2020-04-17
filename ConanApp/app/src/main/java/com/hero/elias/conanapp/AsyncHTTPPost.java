@@ -25,6 +25,7 @@ public class AsyncHTTPPost extends AsyncTask<Void, Void, Integer> {
     protected Integer doInBackground(Void... params) {
         try {
             URL url = new URL(this.urlString);
+            
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
@@ -34,15 +35,10 @@ public class AsyncHTTPPost extends AsyncTask<Void, Void, Integer> {
             
             DataOutputStream os = new DataOutputStream(conn.getOutputStream());
             os.writeBytes(this.jsonObject.toString());
-            
             os.flush();
             os.close();
             
-            //Log.i("STATUS", String.valueOf(conn.getResponseCode()));
-            //Log.i("MSG" , conn.getResponseMessage());
-            
             int reponseCode = conn.getResponseCode();
-            
             conn.disconnect();
             
             return reponseCode;
@@ -62,6 +58,6 @@ public class AsyncHTTPPost extends AsyncTask<Void, Void, Integer> {
     }
     
     public interface TaskListener {
-        public void onFinished(Integer responseCode);
+        void onFinished(Integer responseCode);
     }
 }

@@ -1,28 +1,22 @@
 package com.hero.elias.conanapp;
 
-import android.graphics.Matrix;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager2.adapter.FragmentViewHolder;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 public class VisualizationFragment extends Fragment {
-    
-    ImageView imageView;
     
     public VisualizationFragment() {
     }
     
     public static VisualizationFragment newInstance() {
-        VisualizationFragment fragment = new VisualizationFragment();
-        return fragment;
+        return new VisualizationFragment();
     }
     
     @Override
@@ -37,8 +31,6 @@ public class VisualizationFragment extends Fragment {
     
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        this.imageView = (ImageView) view.findViewById(R.id.visualization_imageview);
-        
         super.onViewCreated(view, savedInstanceState);
     }
 }

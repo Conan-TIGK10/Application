@@ -6,29 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_gravity="center"
-        android:src="@drawable/ic_launcher_foreground"
-        app:srcCompat="@drawable/ic_launcher_foreground" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/bluetooth_state_text"
-            android:text="TextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="176dp"
-            android:layout_marginEnd="176dp"
+        <ImageView
+            android:id="@+id/conon_logo"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_launcher_foreground"
+            android:layout_marginStart="198dp"
+            android:layout_marginEnd="199dp"
+            android:layout_marginTop="128dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
+            app:layout_constraintTop_toBottomOf="@+id/bluetooth_state_text"
+            app:srcCompat="@drawable/ic_launcher_foreground" />
 
         <FrameLayout
             android:id="@+id/frameLayout2"
@@ -48,6 +43,34 @@
                 app:bluetoothTheme="sharp" />
 
         </FrameLayout>
+
+        <TextView
+            android:id="@+id/bluetooth_state_text"
+            android:text="TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="176dp"
+            android:layout_marginEnd="176dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
+
+        <TextView
+            android:id="@+id/logo_text"
+            android:text="Conan Mbot"
+            android:layout_width="267dp"
+            android:layout_height="52dp"
+            android:textSize="36sp"
+            android:textAlignment="center"
+            android:textStyle="bold|italic"
+            android:textAllCaps="true"
+            android:lineSpacingExtra="30sp"
+            android:typeface="monospace"
+            android:layout_marginTop="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/conon_logo" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

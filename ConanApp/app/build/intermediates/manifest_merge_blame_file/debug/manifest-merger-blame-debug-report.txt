@@ -11,23 +11,23 @@
 9-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml
 10
 11    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-11-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:30:5-79
-11-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:30:22-76
+11-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:29:5-79
+11-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:29:22-76
 12    <uses-permission android:name="android.permission.BLUETOOTH" />
-12-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:31:5-68
-12-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:31:22-65
+12-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:30:5-68
+12-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:30:22-65
 13    <uses-permission android:name="android.permission.INTERNET" />
-13-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:32:5-67
-13-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:32:22-64
+13-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:31:5-67
+13-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:31:22-64
 14    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-14-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:33:5-74
-14-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:33:22-71
+14-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:32:5-74
+14-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:32:22-71
 15    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-15-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:34:5-81
-15-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:34:22-78
+15-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:33:5-81
+15-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:33:22-78
 16
 17    <application
-17-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:6:5-28:19
+17-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:6:5-27:19
 18        android:allowBackup="true"
 18-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:8:9-35
 19        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
@@ -48,22 +48,22 @@
 28        android:usesCleartextTraffic="true" >
 28-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:7:9-44
 29        <activity
-29-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:17:9-27:20
+29-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:16:9-26:20
 30            android:name="com.hero.elias.conanapp.MainActivity"
-30-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:18:13-41
+30-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:17:13-41
 31            android:configChanges="keyboard|keyboardHidden|orientation"
-31-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:20:13-72
+31-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:19:13-72
 32            android:screenOrientation="portrait" >
-32-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:19:13-49
+32-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:18:13-49
 33            <intent-filter>
-33-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:23:13-26:29
+33-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:22:13-25:29
 34                <action android:name="android.intent.action.MAIN" />
-34-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:24:17-69
-34-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:24:25-66
+34-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:23:17-69
+34-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:23:25-66
 35
 36                <category android:name="android.intent.category.LAUNCHER" />
-36-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:25:17-77
-36-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:25:27-74
+36-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:24:17-77
+36-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:24:27-74
 37            </intent-filter>
 38        </activity>
 39    </application>

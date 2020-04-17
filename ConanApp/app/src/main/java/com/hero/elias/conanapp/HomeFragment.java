@@ -13,18 +13,17 @@ import android.widget.TextView;
 
 import eo.view.bluetoothstate.BluetoothState;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements BluetoothHandler.BluetoothCallback {
     
-    BluetoothState bluetoothState;
-    TextView bluetoothStateText;
+    private BluetoothState bluetoothState;
+    private TextView bluetoothStateText;
     
     public HomeFragment() {
-    
+        BluetoothHandler.getInstance().addCallback(this);
     }
     
     public static HomeFragment newInstance() {
-        HomeFragment fragment = new HomeFragment();
-        return fragment;
+        return new HomeFragment();
     }
     
     @Override
@@ -39,11 +38,22 @@ public class HomeFragment extends Fragment {
     
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        this.bluetoothState = (BluetoothState) view.findViewById(R.id.bluetooth_state);
+        this.bluetoothState = view.findViewById(R.id.bluetooth_state);
         this.bluetoothState.setState(BluetoothState.State.CONNECTING);
-        this.bluetoothStateText = (TextView) view.findViewById(R.id.bluetooth_state_text);
-        this.bluetoothStateText.setText("Connected");
-    
+        
+        this.bluetoothStateText = view.findViewById(R.id.bluetooth_state_text);
+        this.bluetoothStateText.setText("Connecting");
+        
         super.onViewCreated(view, savedInstanceState);
+    }
+    
+    @Override
+    public void onDestroy() {
+        BluetoothHandler.getInstance().removeCallback(this);
+        super.onDestroy();
+    }
+    
+    @Override
+    public void bluetoothMessage(String message) {
     }
 }

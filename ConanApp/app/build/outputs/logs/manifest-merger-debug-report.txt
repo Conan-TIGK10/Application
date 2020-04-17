@@ -1,12 +1,12 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-35:12
-INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-35:12
-INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-35:12
-INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-35:12
+ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-34:12
+INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-34:12
+INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-34:12
+INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-34:12
 MERGED from [com.github.john990:WaveView:v0.9] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\5d5952057b55e9973e4f89965a6b6e66\jetified-WaveView-v0.9\AndroidManifest.xml:2:1-11:12
 MERGED from [eo.view:bluetoothstate:1.1.1] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\b366aa2e21d7a9795d109da752c9e355\jetified-bluetoothstate-1.1.1\AndroidManifest.xml:2:1-11:12
-MERGED from [com.google.android.material:material:1.2.0-alpha05] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\4d0636b72ff0b4d34e0e621b6e6c137f\material-1.2.0-alpha05\AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.android.material:material:1.2.0-alpha06] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\d7b59fac090afbf92866c52ddde8173a\material-1.2.0-alpha06\AndroidManifest.xml:17:1-24:12
 MERGED from [eo.avd:bluetoothconnecting:1.1.1] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\ca9bd65f72cb75e83e548acc181d8dcd\jetified-bluetoothconnecting-1.1.1\AndroidManifest.xml:2:1-11:12
 MERGED from [eo.avd:bluetoothsearching:1.1.1] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\82e512802756ba2ada0186edb71b288d\jetified-bluetoothsearching-1.1.1\AndroidManifest.xml:2:1-11:12
 MERGED from [eo.avd:bluetoothturningonoff:1.1.1] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\e13fdff46faeaad7ab1a04397b882a0e\jetified-bluetoothturningonoff-1.1.1\AndroidManifest.xml:2:1-11:12
@@ -41,29 +41,29 @@ MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] C:\Users\Alfred\.gradl
 MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\8909bb9e572b85a1aed6ea82735a7b78\lifecycle-livedata-core-2.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.arch.core:core-runtime:2.0.0] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\2541981a540b257b4ca2e11e0b5e803f\core-runtime-2.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.annotation:annotation-experimental:1.0.0] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\0a4c23a06b3dbfca19007c663bc138f3\jetified-annotation-experimental-1.0.0\AndroidManifest.xml:17:1-24:12
-INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-35:12
-INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-35:12
-INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-35:12
+INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-34:12
+INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-34:12
+INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-34:12
 	package
 		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:4:5-38
 		INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml
 		INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml
 	android:versionName
 		INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-35:12
+		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-34:12
 		INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml
 	xmlns:tools
 		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:3:5-51
 	android:versionCode
 		INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-35:12
+		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-34:12
 		INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml
 	xmlns:android
 		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:11-69
 application
-ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:6:5-28:19
-MERGED from [com.google.android.material:material:1.2.0-alpha05] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\4d0636b72ff0b4d34e0e621b6e6c137f\material-1.2.0-alpha05\AndroidManifest.xml:22:5-20
-MERGED from [com.google.android.material:material:1.2.0-alpha05] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\4d0636b72ff0b4d34e0e621b6e6c137f\material-1.2.0-alpha05\AndroidManifest.xml:22:5-20
+ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:6:5-27:19
+MERGED from [com.google.android.material:material:1.2.0-alpha06] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\d7b59fac090afbf92866c52ddde8173a\material-1.2.0-alpha06\AndroidManifest.xml:22:5-20
+MERGED from [com.google.android.material:material:1.2.0-alpha06] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\d7b59fac090afbf92866c52ddde8173a\material-1.2.0-alpha06\AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:1.1.3] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\cb3ee0668a2ccffbec6ced598c9d8e79\constraintlayout-1.1.3\AndroidManifest.xml:9:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:1.1.3] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\cb3ee0668a2ccffbec6ced598c9d8e79\constraintlayout-1.1.3\AndroidManifest.xml:9:5-20
 MERGED from [androidx.core:core:1.2.0] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\da2d7a943cb079388b6be8ac2f95d587\core-1.2.0\AndroidManifest.xml:24:5-89
@@ -89,45 +89,45 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] C:\Users\Al
 	android:usesCleartextTraffic
 		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:7:9-44
 activity#com.hero.elias.conanapp.MainActivity
-ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:17:9-27:20
+ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:16:9-26:20
 	android:screenOrientation
-		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:19:13-49
+		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:18:13-49
 	tools:ignore
-		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:21:13-53
+		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:20:13-53
 	android:configChanges
-		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:20:13-72
+		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:19:13-72
 	android:name
-		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:18:13-41
+		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:17:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:23:13-26:29
+ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:22:13-25:29
 action#android.intent.action.MAIN
-ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:24:17-69
+ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:23:17-69
 	android:name
-		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:24:25-66
+		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:23:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:25:17-77
+ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:24:17-77
 	android:name
-		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:25:27-74
+		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:24:27-74
 uses-permission#android.permission.ACCESS_FINE_LOCATION
-ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:30:5-79
+ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:29:5-79
 	android:name
-		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:30:22-76
+		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:29:22-76
 uses-permission#android.permission.BLUETOOTH
-ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:31:5-68
+ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:30:5-68
 	android:name
-		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:31:22-65
+		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:30:22-65
 uses-permission#android.permission.INTERNET
-ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:32:5-67
+ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:31:5-67
 	android:name
-		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:32:22-64
+		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:31:22-64
 uses-permission#android.permission.BLUETOOTH_ADMIN
-ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:33:5-74
+ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:32:5-74
 	android:name
-		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:33:22-71
+		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:32:22-71
 uses-permission#android.permission.ACCESS_COARSE_LOCATION
-ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:34:5-81
+ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:33:5-81
 	android:name
-		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:34:22-78
+		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:33:22-78
 uses-sdk
 INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml
@@ -136,8 +136,8 @@ MERGED from [com.github.john990:WaveView:v0.9] C:\Users\Alfred\.gradle\caches\tr
 MERGED from [com.github.john990:WaveView:v0.9] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\5d5952057b55e9973e4f89965a6b6e66\jetified-WaveView-v0.9\AndroidManifest.xml:7:5-9:41
 MERGED from [eo.view:bluetoothstate:1.1.1] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\b366aa2e21d7a9795d109da752c9e355\jetified-bluetoothstate-1.1.1\AndroidManifest.xml:7:5-9:41
 MERGED from [eo.view:bluetoothstate:1.1.1] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\b366aa2e21d7a9795d109da752c9e355\jetified-bluetoothstate-1.1.1\AndroidManifest.xml:7:5-9:41
-MERGED from [com.google.android.material:material:1.2.0-alpha05] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\4d0636b72ff0b4d34e0e621b6e6c137f\material-1.2.0-alpha05\AndroidManifest.xml:20:5-44
-MERGED from [com.google.android.material:material:1.2.0-alpha05] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\4d0636b72ff0b4d34e0e621b6e6c137f\material-1.2.0-alpha05\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.material:material:1.2.0-alpha06] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\d7b59fac090afbf92866c52ddde8173a\material-1.2.0-alpha06\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.material:material:1.2.0-alpha06] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\d7b59fac090afbf92866c52ddde8173a\material-1.2.0-alpha06\AndroidManifest.xml:20:5-44
 MERGED from [eo.avd:bluetoothconnecting:1.1.1] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\ca9bd65f72cb75e83e548acc181d8dcd\jetified-bluetoothconnecting-1.1.1\AndroidManifest.xml:7:5-9:41
 MERGED from [eo.avd:bluetoothconnecting:1.1.1] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\ca9bd65f72cb75e83e548acc181d8dcd\jetified-bluetoothconnecting-1.1.1\AndroidManifest.xml:7:5-9:41
 MERGED from [eo.avd:bluetoothsearching:1.1.1] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\82e512802756ba2ada0186edb71b288d\jetified-bluetoothsearching-1.1.1\AndroidManifest.xml:7:5-9:41

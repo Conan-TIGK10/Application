@@ -19,9 +19,9 @@ public class AsyncHTTPGet extends AsyncTask<Void, Void, String> {
     
     @Override
     protected String doInBackground(Void... params) {
-        
         try {
             URL url = new URL(this.urlString);
+            
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
@@ -37,11 +37,8 @@ public class AsyncHTTPGet extends AsyncTask<Void, Void, String> {
                 sb.append(line + "\n");
             }
             br.close();
-            
-            String string = sb.toString();
-            
-            return string;
-            
+    
+            return sb.toString();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -58,7 +55,7 @@ public class AsyncHTTPGet extends AsyncTask<Void, Void, String> {
     }
     
     public interface TaskListener {
-        public void onFinished(String jsonObject);
+        void onFinished(String jsonObject);
     }
 }
 

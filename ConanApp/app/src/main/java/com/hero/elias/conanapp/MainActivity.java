@@ -13,8 +13,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
     
-    BottomNavigationView bottomNavigation;
-    String currentScreen;
+    private BottomNavigationView bottomNavigation;
+    private String currentScreen;
     
     BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -35,58 +35,43 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
     
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        this.setContentView(R.layout.activity_main);
-        this.bottomNavigation = findViewById(R.id.bottom_navigation);
-        this.bottomNavigation.setItemIconTintList(null);
-        
-        this.bottomNavigation.setOnNavigationItemSelectedListener(this.navigationItemSelectedListener);
-        this.openFragment(HomeFragment.newInstance(), "Home");
-        this.currentScreen = "Home";
-        
-        BluetoothHandler.getInstance().setMainActivity(this);
-        
-        WifiHandler.GetPosition(new WifiHandler.PositionGetListener() {
-            @Override
-            public void onFinished(double x, double y) {
-                Log.i("MSG", String.valueOf(x));
-                Log.i("MSG", String.valueOf(y));
-            }
-        });
-        
-        //WifiHandler.PostPosition(3.1, 4.2);
-    }
-    
-    @Override
-    protected void onDestroy() {
-        BluetoothHandler.getInstance().unregisterReceivers();
-        super.onDestroy();
-    }
-    
     public void openFragment(Fragment fragment, String toFragment) {
-        if (this.currentScreen != toFragment){
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-    
-            if (toFragment == "Command"){
+        if (this.currentScreen != toFragment) {
+            FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
+            
+            if (toFragment == "Command") {
                 transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
-            }else if (toFragment == "Visualization"){
+            } else if (toFragment == "Visualization") {
                 transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
-            }else if (toFragment == "Home"){
-                if (this.currentScreen == "Command"){
+            } else if (toFragment == "Home") {
+                if (this.currentScreen == "Command") {
                     transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
-                }else if(this.currentScreen == "Visualization"){
+                } else if (this.currentScreen == "Visualization") {
                     transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
                 }
             }
-    
+            
             this.currentScreen = toFragment;
-    
+            
             transaction.replace(R.id.bottom_nav_container, fragment);
             transaction.addToBackStack(null);
             transaction.commit();
         }
+    }
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.setContentView(R.layout.activity_main);
+        
+        this.bottomNavigation = this.findViewById(R.id.bottom_navigation);
+        this.bottomNavigation.setItemIconTintList(null);
+        this.bottomNavigation.setOnNavigationItemSelectedListener(this.navigationItemSelectedListener);
+        
+        this.openFragment(HomeFragment.newInstance(), "Home");
+        this.currentScreen = "Home";
+        
+        BluetoothHandler.getInstance().setMainActivity(this);
     }
     
     @Override
@@ -97,8 +82,14 @@ public class MainActivity extends AppCompatActivity {
     
     @Override
     protected void onResume() {
-        //BluetoothHandler.getInstance().startThread();
+        BluetoothHandler.getInstance().startThread();
         super.onResume();
+    }
+    
+    @Override
+    protected void onDestroy() {
+        BluetoothHandler.getInstance().unregisterReceivers();
+        super.onDestroy();
     }
 }
 

@@ -120,3 +120,5 @@ app/build/intermediates/validate_signing_config/
 app/build/outputs/apk/
 app/build/tmp/
 .idea/saveactions_settings.xml
+!/local.properties
+.idea/render.experimental.xml
