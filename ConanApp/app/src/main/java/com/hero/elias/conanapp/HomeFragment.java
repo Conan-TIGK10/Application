@@ -56,4 +56,34 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
     @Override
     public void bluetoothMessage(String message) {
     }
+    
+    @Override
+    public void onStateChange(BluetoothHandler.BluetoothInState state) {
+        switch (state){
+            case NOTFOUND:
+                this.bluetoothState.setState(BluetoothState.State.SEARCHING);
+                this.bluetoothStateText.setText("Robot Not Found");
+                break;
+            case BLUETOOTHDISABLED:
+                this.bluetoothState.setState(BluetoothState.State.OFF);
+                this.bluetoothStateText.setText("Bluetooth Disabled");
+                break;
+            case CONNCETED:
+                this.bluetoothState.setState(BluetoothState.State.CONNECTED);
+                this.bluetoothStateText.setText("Connected !");
+                break;
+            case SEARCHING:
+                this.bluetoothState.setState(BluetoothState.State.SEARCHING);
+                this.bluetoothStateText.setText("Searching...");
+                break;
+            case CONNECTING:
+                this.bluetoothState.setState(BluetoothState.State.CONNECTING);
+                this.bluetoothStateText.setText("Connecting...");
+                break;
+            case DISCONNECTED:
+                this.bluetoothState.setState(BluetoothState.State.SEARCH);
+                this.bluetoothStateText.setText("Disconnected");
+                break;
+        }
+    }
 }

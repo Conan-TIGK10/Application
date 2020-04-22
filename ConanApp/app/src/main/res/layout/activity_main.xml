@@ -67,7 +67,6 @@
         app:backgroundTint="#00FFFFFF"
         app:elevation="0dp"
         app:itemBackground="@android:color/transparent"
-        app:itemIconTint="@android:color/transparent"
         app:itemTextColor="#282828"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -35,4 +35,9 @@ public class Vector2D {
     public static double lengthOfVector(Vector2D point) {
         return Math.sqrt(Math.pow(point.x, 2) + Math.pow(point.y, 2));
     }
+    
+    public static float dot(Vector2D a, Vector2D b){
+        return (float) ((a.x * b.x ) + (a.y * b.y));
+    }
+    
 }

@@ -25,7 +25,8 @@ android {
 }
 
 dependencies {
-    compile 'com.github.john990:WaveView:v0.9'
+    implementation 'com.github.john990:WaveView:v0.9'
+    implementation 'si.inova:neatle:0.9.8'
 
     implementation 'eo.view:bluetoothstate:1.1.1'
     implementation fileTree(dir: 'libs', include: ['*.jar'])

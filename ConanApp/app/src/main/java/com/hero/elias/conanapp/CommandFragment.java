@@ -30,6 +30,11 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
     }
     
     @Override
+    public void onStateChange(BluetoothHandler.BluetoothInState state) {
+    
+    }
+    
+    @Override
     public void onClick(View v) {
         String message = "Hello Friend";
         BluetoothHandler.getInstance().write(message.getBytes());

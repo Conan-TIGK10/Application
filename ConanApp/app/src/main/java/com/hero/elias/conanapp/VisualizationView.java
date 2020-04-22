@@ -100,7 +100,7 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
         this.pathList = new ArrayList<Vector2D>();
         this.pathList.add(this.windowCenter);
         this.phaseCounter = 0.0;
-        this.cornerPathEffect = new CornerPathEffect(300);
+        this.cornerPathEffect = new CornerPathEffect(150);
     
         this.robotPosition = new Vector2D(0.0, 0.0);
         this.robotHeading = new Vector2D(0.0, 1.0);
@@ -151,12 +151,14 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
     private void updateRobot(Canvas canvas){
         this.robotHeading.x = Tween.smoothToTarget(this.robotHeading.x, this.robotDestinationHeading.x, 12.0);
         this.robotHeading.y = Tween.smoothToTarget(this.robotHeading.y, this.robotDestinationHeading.y, 12.0);
+        this.robotHeading = Vector2D.normalizeVector(this.robotHeading);
         this.robotPosition.x += this.robotHeading.x;
         this.robotPosition.y += this.robotHeading.y;
         
-        float xScale = (float) Tween.sine(1.75, 2, 4, 0, this.secondsCounter);
-        float yScale = (float) Tween.sine(1.75, 2, 3, 0.25, this.secondsCounter);
-    
+        float xScale = (float) Tween.sine(1.85, 2, 4, 0, this.secondsCounter);
+        float yScale = (float) Tween.sine(1.85, 2, 4, Math.PI / 2.0, this.secondsCounter);
+        
+        
         this.robotMatrix.setRotate((float) Vector2D.vectorToDegree(this.robotHeading), this.robotBitmap.getWidth() / 2f, this.robotBitmap.getHeight() / 2f);
         this.robotMatrix.postScale(xScale, yScale, this.robotBitmap.getWidth() / 2f, this.robotBitmap.getHeight() / 2f);
         this.robotMatrix.postTranslate((float) this.windowCenter.x - this.robotBitmap.getWidth() / 2f, (float) this.windowCenter.y - this.robotBitmap.getHeight() / 2f);
@@ -171,7 +173,7 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
             for (int j = 0; j < (this.gridSpacing * 2); j++) {
                 Vector2D circle = new Vector2D((i * (this.windowWidth / this.gridSpacing) + ((this.windowWidth / this.gridSpacing) * scaleX)), (j * (this.windowWidth / this.gridSpacing) + ((this.windowWidth / this.gridSpacing) * scaleY)));
                 double length = Vector2D.lengthBetweenVectors(circle, this.windowCenter);
-                this.gridPaint.setAlpha((int) Tween.linear(MathUtils.clamp(length, 0.0, 750.0), 0.0, 750.0, 127.0, 0.0));
+                this.gridPaint.setAlpha((int) Tween.cosine(MathUtils.clamp(length, 0.0, 750.0), 0.0, 750.0, 127.0, 0.0));
                 canvas.drawCircle((float)circle.x, (float)circle.y, 16f, this.gridPaint);
             }
         }
