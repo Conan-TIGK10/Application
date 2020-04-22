@@ -2,9 +2,14 @@ package com.hero.elias.conanapp;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -12,6 +17,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     
@@ -29,11 +36,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         this.bottomNavigation = this.findViewById(R.id.bottom_navigation);
         // Disables icon tinting, allowing for textured icons
         this.bottomNavigation.setItemIconTintList(null);
+        
         this.bottomNavigation.setOnNavigationItemSelectedListener(this);
         
         this.openFragment(HomeFragment.newInstance(), "Home");
         this.currentScreen = "Home";
-        
+        this.bottomNavigation.setSelectedItemId(R.id.navigation_home);
+    
         this.checkLocationPermission();
     }
     
@@ -57,14 +66,17 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        item.setChecked(true);
+        item.setEnabled(true);
+    
         switch (item.getItemId()) {
-            case R.id.navigation_command:
+            case R.id.navigation_steer:
                 this.openFragment(CommandFragment.newInstance(), "Command");
                 return true;
             case R.id.navigation_home:
                 this.openFragment(HomeFragment.newInstance(), "Home");
                 return true;
-            case R.id.navigation_visualization:
+            case R.id.navigation_map:
                 this.openFragment(VisualizationFragment.newInstance(), "Visualization");
                 return true;
         }

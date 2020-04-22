@@ -37,7 +37,7 @@
 20        android:allowBackup="true"
 20-->C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:10:9-35
 21        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-21-->[androidx.core:core:1.2.0] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\da2d7a943cb079388b6be8ac2f95d587\core-1.2.0\AndroidManifest.xml:24:18-86
+21-->[androidx.core:core:1.2.0] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\963fda27c390a5391e961c4eba719b45\core-1.2.0\AndroidManifest.xml:24:18-86
 22        android:debuggable="true"
 23        android:extractNativeLibs="false"
 24        android:icon="@mipmap/ic_launcher"

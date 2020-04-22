@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/navigation_command"
-        android:icon="@drawable/icons8_game_controller_128px"
-        android:title="Command" />
+        android:id="@+id/navigation_steer"
+        android:icon="@drawable/icons8_steering_wheel_64px" />
     <item
         android:id="@+id/navigation_home"
-        android:icon="@drawable/icons8_home_128px"
-        android:title="Home" />
+        android:icon="@drawable/icons8_home_128px" />
     <item
-        android:id="@+id/navigation_visualization"
-        android:icon="@drawable/icons8_graph_128px"
-        android:title="Visualization" />
+        android:id="@+id/navigation_map"
+        android:icon="@drawable/icons8_treasure_map_64px" />
 </menu>

@@ -10,7 +10,7 @@
         android:id="@+id/visualization_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#00FFFFFF"
-        android:backgroundTint="#00FFFFFF" />
+        android:background="@color/transparent"
+        android:backgroundTint="@color/transparent" />
 
 </FrameLayout>

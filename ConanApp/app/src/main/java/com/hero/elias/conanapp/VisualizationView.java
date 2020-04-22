@@ -77,7 +77,8 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
         this.robotMatrix = new Matrix();
         
         this.gridPaint = new Paint();
-        
+        this.gridPaint.setARGB(255, 64, 64, 64);
+    
         this.lidarPaint = new Paint();
         this.lidarPaint.setMaskFilter(new BlurMaskFilter(32f, BlurMaskFilter.Blur.NORMAL));
         this.lidarPaint.setStrokeWidth(32f);
@@ -100,7 +101,7 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
         this.pathList = new ArrayList<Vector2D>();
         this.pathList.add(this.windowCenter);
         this.phaseCounter = 0.0;
-        this.cornerPathEffect = new CornerPathEffect(150);
+        this.cornerPathEffect = new CornerPathEffect(100);
     
         this.robotPosition = new Vector2D(0.0, 0.0);
         this.robotHeading = new Vector2D(0.0, 1.0);
@@ -122,10 +123,9 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
     }
     
     private void updateRandom(){
-        if (this.frameCounter % (60 * 2) == 0) {
+        if (this.frameCounter % (60 * 3) == 0) {
             this.pathList.add(new Vector2D(this.windowCenter.x + (this.robotPosition.x * this.gridDivider), this.windowCenter.y - (this.robotPosition.y * this.gridDivider)));
             this.robotDestinationHeading = Vector2D.degreeToVector(this.getRandDouble(0.0, 360.0));
-            this.gridPaint.setARGB(255, (int) (Math.random() * 255.0), (int) (Math.random() * 255.0), (int) (Math.random() * 255.0));
         }
     }
     
@@ -233,9 +233,9 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
         }else{
             this.deltaTime = 0.016;
         }
+        
         this.previousNanoTime = frameTimeNanos;
-    
-        this.invalidate();
         Choreographer.getInstance().postFrameCallback(this);
+        this.invalidate();
     }
 }
