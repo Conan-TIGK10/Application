@@ -39,11 +39,13 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         this.bluetoothState = view.findViewById(R.id.bluetooth_state);
-        this.bluetoothState.setState(BluetoothState.State.CONNECTING);
         
         this.bluetoothStateText = view.findViewById(R.id.bluetooth_state_text);
         this.bluetoothStateText.setText("Connecting");
-        
+    
+        this.bluetoothState.setState(BluetoothState.State.CONNECTING);
+    
+    
         super.onViewCreated(view, savedInstanceState);
     }
     
@@ -54,11 +56,12 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
     }
     
     @Override
-    public void bluetoothMessage(String message) {
+    public void bluetoothMessage(byte[] bytes) {
     }
     
     @Override
     public void onStateChange(BluetoothHandler.BluetoothInState state) {
+        if (this.bluetoothState == null){return;}
         switch (state){
             case NOTFOUND:
                 this.bluetoothState.setState(BluetoothState.State.SEARCHING);
@@ -68,7 +71,7 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
                 this.bluetoothState.setState(BluetoothState.State.OFF);
                 this.bluetoothStateText.setText("Bluetooth Disabled");
                 break;
-            case CONNCETED:
+            case CONNECTED:
                 this.bluetoothState.setState(BluetoothState.State.CONNECTED);
                 this.bluetoothStateText.setText("Connected !");
                 break;

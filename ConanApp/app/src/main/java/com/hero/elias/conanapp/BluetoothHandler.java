@@ -32,10 +32,10 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
     
     private static BluetoothHandler sSoleInstance;
     
-    private String MAC_ADDRESS = "98:D3:34:90:6F:A1";
+    private String MAC_ADDRESS = "00:1B:10:65:FC:C5";
     private UUID SERVICE_UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
-    private UUID WRITE_UUID = UUID.fromString("0000ffe2-0000-1000-8000-00805f9b34fb");
-    private UUID READ_UUID = UUID.fromString("0000ffe3-0000-1000-8000-00805f9b34fb");
+    private UUID READ_UUID = UUID.fromString("0000ffe2-0000-1000-8000-00805f9b34fb");
+    private UUID WRITE_UUID = UUID.fromString("0000ffe3-0000-1000-8000-00805f9b34fb");
     
     private Activity mainActivity;
     
@@ -55,6 +55,7 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
         this.bluetoothCallback = new ArrayList<BluetoothCallback>();
         this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         this.bluetoothState = BluetoothInState.BLUETOOTHDISABLED;
+        this.updateState();
     }
     
     public static BluetoothHandler getInstance() {
@@ -95,6 +96,7 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
         this.init();
         if (this.bluetoothAdapter.isEnabled()) {
             this.bluetoothState = BluetoothInState.SEARCHING;
+            this.updateState();
             this.bluetoothDevice = Neatle.getDevice(this.MAC_ADDRESS);
             this.subscription = Neatle.createSubscription(this.mainActivity, this.bluetoothDevice, this.SERVICE_UUID, this.READ_UUID);
             this.subscription.setOnCharacteristicsChangedListener(this);
@@ -118,6 +120,7 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
     public void dissconnect() {
         if (this.subscription.isStarted()) {
             this.bluetoothState = BluetoothInState.DISCONNECTED;
+            this.updateState();
             this.deviceConnected = false;
             this.subscription.stop();
             this.unregisterReceivers();
@@ -130,6 +133,7 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
     
     private void init() {
         this.bluetoothState = BluetoothInState.BLUETOOTHDISABLED;
+        this.updateState();
         while (this.bluetoothAdapter == null) {
             this.bluetoothEnableIntent();
             this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -139,16 +143,17 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
     
     @Override
     public void onCharacteristicChanged(final CommandResult change) {
-        Log.i("---BLE---", "SUBSCRIPTION CALLED");
         if (change.wasSuccessful()) {
-            if (this.bluetoothState != BluetoothInState.CONNCETED) {
-                this.bluetoothState = BluetoothInState.CONNCETED;
+            if (this.bluetoothState != BluetoothInState.CONNECTED) {
+                this.bluetoothState = BluetoothInState.CONNECTED;
+                this.updateState();
             }
-            final String result = change.getValueAsString();
-            Log.i("---BLE---", "GOT RESULT : " + result);
-            this.updateMessage(result);
+            
+            Log.i("BT", "RECEIVED FROM ROBOT: " + change.getValueAsString());
+            this.updateMessage(change.getValue());
         } else {
             this.bluetoothState = BluetoothInState.DISCONNECTED;
+            this.updateState();
         }
     }
     
@@ -163,15 +168,21 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
                 //Log.i("BT", "Bond State Changed " + device.getName());
                 break;
             case BluetoothDevice.ACTION_ACL_CONNECTED:
-                //Log.i("BT", "Device Connected " + device.getName());
-                if (this.bluetoothDevice.getAddress() == device.getAddress()) {
-                    this.bluetoothState = BluetoothInState.CONNCETED;
+                Log.i("BT", "Device Connected " + device.getName());
+                if (this.bluetoothDevice.getAddress().equals(device.getAddress())) {
+                    this.bluetoothState = BluetoothInState.CONNECTED;
+                    this.updateState();
+                    if (!this.checkConnection()){
+                        this.connect();
+                    }
                 }
                 break;
             case BluetoothDevice.ACTION_ACL_DISCONNECTED:
-                //Log.i("BT", "Device Dissconnected " + device.getName());
-                if (this.bluetoothDevice.getAddress() == device.getAddress()) {
+                Log.i("BT", "Device Dissconnected " + device.getName());
+                if (this.bluetoothDevice.getAddress().equals(device.getAddress())) {
                     this.bluetoothState = BluetoothInState.DISCONNECTED;
+                    this.updateState();
+                    this.connect();
                 }
                 break;
         }
@@ -227,9 +238,9 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
         }
     }
     
-    private void updateMessage(final String text) {
+    private void updateMessage(byte[] bytes) {
         for (int i = 0; i < this.bluetoothCallback.size(); i++) {
-            this.bluetoothCallback.get(i).bluetoothMessage(text);
+            this.bluetoothCallback.get(i).bluetoothMessage(bytes);
         }
     }
     
@@ -241,13 +252,12 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
     
     public void write(final byte[] bytes) {
         if (this.deviceConnected) {
-            final InputSource inputSource = new ByteArrayInputSource(bytes);
+            ByteArrayInputSource inputSource = new ByteArrayInputSource(bytes);
             final Operation writeOperation = Neatle.createOperationBuilder(this.mainActivity)
                     .write(this.SERVICE_UUID, this.WRITE_UUID, inputSource)
                     .onFinished(new SimpleOperationObserver() {
                         @Override
                         public void onOperationFinished(final Operation op, final OperationResults results) {
-                            Log.i("---BLE---", "WRITE CALLED");
                             if (results.wasSuccessful()) {
                                 System.out.println("Write was successful!");
                             } else {
@@ -261,7 +271,7 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
     }
     
     enum BluetoothInState {
-        CONNCETED,
+        CONNECTED,
         CONNECTING,
         DISCONNECTED,
         NOTFOUND,
@@ -270,7 +280,7 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
     }
     
     interface BluetoothCallback {
-        void bluetoothMessage(String message);
+        void bluetoothMessage(byte[] bytes);
         
         void onStateChange(BluetoothInState state);
     }

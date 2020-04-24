@@ -1,13 +1,9 @@
 package com.hero.elias.conanapp;
 
-import android.app.Activity;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -28,6 +24,7 @@ import java.util.Locale;
 public class WifiHandler {
     
     private static MainActivity mainActivity;
+    private static int sessionId;
     
     public static void getPosition(PositionGetListener positionListener) {
         new AsyncHTTPGet("http://3.122.218.59/position", response -> {
@@ -40,6 +37,7 @@ public class WifiHandler {
             }
         }).execute();
     }
+    
     
     interface PositionGetListener {
         void onFinished(double x, double y);

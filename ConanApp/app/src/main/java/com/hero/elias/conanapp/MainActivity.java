@@ -1,15 +1,13 @@
 package com.hero.elias.conanapp;
 
 import android.Manifest;
+import android.bluetooth.BluetoothDevice;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -18,12 +16,22 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import org.w3c.dom.Text;
+import java.util.UUID;
+
+import si.inova.neatle.Neatle;
+import si.inova.neatle.operation.CharacteristicSubscription;
+import si.inova.neatle.operation.CharacteristicsChangedListener;
+import si.inova.neatle.operation.CommandResult;
+import si.inova.neatle.operation.Operation;
+import si.inova.neatle.operation.OperationResults;
+import si.inova.neatle.operation.SimpleOperationObserver;
+import si.inova.neatle.source.ByteArrayInputSource;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     
     private BottomNavigationView bottomNavigation;
     private String currentScreen;
+    private CharacteristicSubscription subscription;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +52,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         this.bottomNavigation.setSelectedItemId(R.id.navigation_home);
     
         this.checkLocationPermission();
+        
+        MbotHandler.getInstance();
+        BluetoothHandler.getInstance().connect();
     }
     
     @Override
@@ -54,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     
     @Override
     protected void onResume() {
-        BluetoothHandler.getInstance().connect();
+//        BluetoothHandler.getInstance().connect();
         super.onResume();
     }
     

@@ -1,6 +1,6 @@
 package com.hero.elias.conanapp;
 
-public class Tween {
+public class Tweening {
     // fraction is between 0 and 1
     public static double linear(double fromMin, double fromMax, double fraction){
         return (fromMin * (1.0 - fraction) + fromMax * fraction);
@@ -15,7 +15,6 @@ public class Tween {
     // scales a value from one scale to another scale linearly
     public static double linear(double fromValue, double fromMin, double fromMax, double toMin, double toMax) {
         return linear(toMin, toMax, (fromValue - fromMin) / (fromMax - fromMin));
-        //return toMin + (fromValue - fromMin) * (toMax - toMin) / (fromMax - fromMin);
     }
     
     // scales a value from one scale to another scale using cosine function (smoother)
