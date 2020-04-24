@@ -2,6 +2,8 @@ package com.hero.elias.conanapp;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -14,8 +16,7 @@ public class VisualizationFragment extends Fragment {
     }
     
     public static VisualizationFragment newInstance() {
-        VisualizationFragment fragment = new VisualizationFragment();
-        return fragment;
+        return new VisualizationFragment();
     }
     
     @Override
@@ -26,5 +27,10 @@ public class VisualizationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_visualization, container, false);
+    }
+    
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
 }

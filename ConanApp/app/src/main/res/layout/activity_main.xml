@@ -7,6 +7,20 @@
     tools:context=".MainActivity">
 
     <FrameLayout
+        android:id="@+id/bottom_nav_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:foregroundTint="@color/transparent"
+        android:fadingEdgeLength="0dp"
+        android:elevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </FrameLayout>
+
+    <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="414dp"
         android:layout_height="89dp"
@@ -18,11 +32,11 @@
             android:id="@+id/wave_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#00FFFFFF"
+            android:background="@color/transparent"
             android:alpha="100"
             android:visibility="visible"
             android:backgroundTintMode="src_atop"
-            android:backgroundTint="#00574B"
+            android:backgroundTint="@color/transparent"
             android:elevation="0dp"
             android:fadingEdgeLength="0dp"
             app:above_wave_color="@color/colorPrimaryDark"
@@ -35,40 +49,33 @@
         </com.john.waveview.WaveView>
     </FrameLayout>
 
-    <FrameLayout
-        android:id="@+id/bottom_nav_container"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:foregroundTint="#00FFFFFF"
-        android:fadingEdgeLength="8dp"
-        android:elevation="8dp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="205dp">
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/transparent"
+        android:foregroundTint="@color/transparent"
+        android:backgroundTint="@color/transparent"
+        android:visibility="visible"
+        android:foreground="@color/transparent"
+        android:scrollbarThumbHorizontal="@android:color/transparent"
+        android:scrollbarThumbVertical="@android:color/transparent"
+        android:scrollbarTrackHorizontal="@android:color/transparent"
+        android:scrollbarTrackVertical="@android:color/transparent"
+        android:elevation="0dp"
+        app:backgroundTint="@color/transparent"
+        app:elevation="0dp"
+        app:itemBackground="@color/transparent"
+        app:itemIconSize="32dp"
+        app:itemTextAppearanceActive="@style/navTextActive"
+        app:itemTextAppearanceInactive="@style/navTextInactive"
+        app:itemTextColor="@color/colorText"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_navigation_menu">
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_navigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="#00FFFFFF"
-            android:foregroundTint="#00FFFFFF"
-            android:backgroundTint="#00FFFFFF"
-            android:visibility="visible"
-            android:foreground="@android:color/transparent"
-            android:scrollbarThumbHorizontal="@android:color/transparent"
-            android:scrollbarThumbVertical="@android:color/transparent"
-            android:scrollbarTrackHorizontal="@android:color/transparent"
-            android:scrollbarTrackVertical="@android:color/transparent"
-            android:elevation="0dp"
-            app:backgroundTint="#00FFFFFF"
-            app:elevation="0dp"
-            app:itemBackground="@android:color/transparent"
-            app:itemIconTint="@android:color/transparent"
-            app:itemTextColor="@color/white"
-            app:menu="@menu/bottom_navigation_menu">
-
-        </com.google.android.material.bottomnavigation.BottomNavigationView>
-
-    </FrameLayout>
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
