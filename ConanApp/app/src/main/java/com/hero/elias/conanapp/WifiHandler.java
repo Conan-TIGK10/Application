@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -25,25 +26,29 @@ public class WifiHandler {
     
     private static MainActivity mainActivity;
     private static int sessionId;
+    private static boolean sessionSet = false;
     
-    public static void getPosition(PositionGetListener positionListener) {
+    public static void getLastPosition(PositionGetListener getListener) {
         new AsyncHTTPGet("http://3.122.218.59/position", response -> {
             try {
                 JSONArray jsonArray = new JSONArray(response);
-                JSONObject jsonObject = jsonArray.getJSONObject(0);
-                positionListener.onFinished(jsonObject.getDouble("x"), jsonObject.getDouble("y"));
+                if (jsonArray.length() > 0){
+                    JSONObject jsonObject = jsonArray.getJSONObject(jsonArray.length()-1);
+                    getListener.onFinished(jsonObject.getInt("id"), jsonObject.getDouble("x"), jsonObject.getDouble("y"), jsonObject.getInt("sessionId"));
+                }else{
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }).execute();
     }
-    
-    
     interface PositionGetListener {
-        void onFinished(double x, double y);
+        void onFinished(int id, double x, double y, int sessionId);
     }
     
-    public static void postPosition(double x, double y) {
+    public static void postPosition(double x, double y, PositionPostListener postListener) {
+        if (!sessionSet){ return; }
+        
         Date now = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMANY);
         String date = dateFormat.format(now);
@@ -52,13 +57,58 @@ public class WifiHandler {
         try {
             jsonParam.put("x", x);
             jsonParam.put("y", y);
+            jsonParam.put("sessionId", sessionId);
             jsonParam.put("read_at", date);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         
-        new AsyncHTTPPost("http://3.122.218.59/position", jsonParam, responseCode -> {
-            //Log.i("MSG", String.valueOf(responseCode));
+        new AsyncHTTPPost("http://3.122.218.59/position", jsonParam, responseString -> {
+            Log.i("WIFI", String.valueOf(responseString));
+            postListener.onFinished();
+        }).execute();
+    }
+    interface PositionPostListener {
+        void onFinished();
+    }
+    
+    public static void postCollision(double x, double y){
+        if (!sessionSet){ return; }
+        
+        postPosition(x, y, () -> {
+            getLastPosition((id, x1, y1, sessionId) -> {
+                JSONObject jsonParam = new JSONObject();
+                try {
+                    jsonParam.put("positionId", id);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+        
+                new AsyncHTTPPost("http://3.122.218.59/position", jsonParam, responseString -> {
+                    Log.i("WIFI", String.valueOf(responseString));
+                }).execute();
+            });
+        });
+    }
+    
+    public static void createSession(String sessionName){
+        JSONObject jsonParam = new JSONObject();
+        try {
+            jsonParam.put("name", sessionName);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    
+        new AsyncHTTPPost("http://3.122.218.59/session", jsonParam, responseString -> {
+            Log.i("WIFI", String.valueOf(responseString));
+            try {
+                JSONObject json = new JSONObject(responseString);
+                Log.i("WIFI", String.valueOf(json.getInt("id")));
+                sessionId = json.getInt("id");
+                sessionSet = true;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }).execute();
     }
     
@@ -74,7 +124,7 @@ public class WifiHandler {
             if( wifiInfo.getNetworkId() == -1 ){
                 AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
     
-                builder.setMessage("Location Permission")
+                builder.setMessage("Wifi")
                         .setTitle("In order to Send data to the Backend Database Wifi must be Turned on, Please turn on.");
                 AlertDialog dialog = builder.create();
     
@@ -96,7 +146,7 @@ public class WifiHandler {
     }
 }
 
-class AsyncHTTPPost extends AsyncTask<Void, Void, Integer> {
+class AsyncHTTPPost extends AsyncTask<Void, Void, String> {
     
     private final TaskListener taskListener;
     private final String urlString;
@@ -109,7 +159,7 @@ class AsyncHTTPPost extends AsyncTask<Void, Void, Integer> {
     }
     
     @Override
-    protected Integer doInBackground(Void... params) {
+    protected String doInBackground(Void... params) {
         try {
             URL url = new URL(this.urlString);
             
@@ -124,20 +174,26 @@ class AsyncHTTPPost extends AsyncTask<Void, Void, Integer> {
             os.writeBytes(this.jsonObject.toString());
             os.flush();
             os.close();
-            
-            int reponseCode = conn.getResponseCode();
-            conn.disconnect();
-            
-            return reponseCode;
+    
+            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+            StringBuilder sb = new StringBuilder();
+    
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+            br.close();
+    
+            return sb.toString();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        return 404;
+    
+        return null;
     }
     
     @Override
-    protected void onPostExecute(Integer result) {
+    protected void onPostExecute(String result) {
         super.onPostExecute(result);
         if (this.taskListener != null && result != null) {
             this.taskListener.onFinished(result);
@@ -145,7 +201,7 @@ class AsyncHTTPPost extends AsyncTask<Void, Void, Integer> {
     }
     
     interface TaskListener {
-        void onFinished(Integer responseCode);
+        void onFinished(String responseString);
     }
 }
 
@@ -197,7 +253,7 @@ class AsyncHTTPGet extends AsyncTask<Void, Void, String> {
     }
     
     interface TaskListener {
-        void onFinished(String jsonObject);
+        void onFinished(String responseString);
     }
 }
 
