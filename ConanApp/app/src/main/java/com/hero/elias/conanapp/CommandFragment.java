@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.io.UnsupportedEncodingException;
+
 public class CommandFragment extends Fragment implements BluetoothHandler.BluetoothCallback, View.OnClickListener {
     Button sendButton;
     TextView receiveTextView;
@@ -25,6 +27,7 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
     RelativeLayout layout_joystick;
     ImageView image_joystick, image_border;
     TextView textView_x, textView_y, textView_angle, textView_distance, textView_direction;
+    String message;
     
     public CommandFragment() {
         BluetoothHandler.getInstance().addCallback(this);
@@ -83,11 +86,25 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
         joystick.setOffset(90);
         joystick.setMinimumDistance(50);
 
+
         layout_joystick.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View arg0, MotionEvent arg1) {
+
+                // send information to bluetooth
+
                 joystick.drawStick(arg1);
                 if(arg1.getAction() == MotionEvent.ACTION_DOWN
                         || arg1.getAction() == MotionEvent.ACTION_MOVE) {
+
+                    message = "/" + joystick.getX() + "," + joystick.getY() + "\\";
+                    System.out.println(message);
+
+                    try {
+                        BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+
                     textView_x.setText("X : " + joystick.getX());
                     textView_y.setText("Y : " + joystick.getY());
                     textView_angle.setText("Angle : " + joystick.getAngle());
