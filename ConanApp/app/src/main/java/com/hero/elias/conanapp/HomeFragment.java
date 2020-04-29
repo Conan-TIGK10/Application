@@ -14,51 +14,51 @@ import android.widget.TextView;
 import eo.view.bluetoothstate.BluetoothState;
 
 public class HomeFragment extends Fragment implements BluetoothHandler.BluetoothCallback {
-    
+
     private BluetoothState bluetoothState;
     private TextView bluetoothStateText;
-    
+
     public HomeFragment() {
         BluetoothHandler.getInstance().addCallback(this);
     }
-    
+
     public static HomeFragment newInstance() {
         return new HomeFragment();
     }
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-    
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
-    
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         this.bluetoothState = view.findViewById(R.id.bluetooth_state);
-        
+
         this.bluetoothStateText = view.findViewById(R.id.bluetooth_state_text);
         this.bluetoothStateText.setText("Connecting");
-    
+
         this.bluetoothState.setState(BluetoothState.State.CONNECTING);
-    
-    
+
+
         super.onViewCreated(view, savedInstanceState);
     }
-    
+
     @Override
     public void onDestroy() {
         BluetoothHandler.getInstance().removeCallback(this);
         super.onDestroy();
     }
-    
+
     @Override
     public void bluetoothMessage(byte[] bytes) {
     }
-    
+
     @Override
     public void onStateChange(BluetoothHandler.BluetoothInState state) {
         if (this.bluetoothState == null){return;}

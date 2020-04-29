@@ -19,50 +19,49 @@ import android.widget.TextView;
 
 import java.io.UnsupportedEncodingException;
 
-public class CommandFragment extends Fragment implements BluetoothHandler.BluetoothCallback, View.OnClickListener {
-    Button sendButton;
-    TextView receiveTextView;
+public class CommandFragment extends Fragment implements BluetoothHandler.BluetoothCallback {
+
+    private TextView receiveTextView;
+    private int messagesReceived;
+
     Bitmap ball;
     JoyStickClass joystick;
     RelativeLayout layout_joystick;
     ImageView image_joystick, image_border;
     TextView textView_x, textView_y, textView_angle, textView_distance, textView_direction;
     String message;
-    
+
     public CommandFragment() {
         BluetoothHandler.getInstance().addCallback(this);
     }
-    
+
     public static CommandFragment newInstance() {
-        CommandFragment fragment = new CommandFragment();
-        return fragment;
+        return new CommandFragment();
     }
-    
+
     @Override
-    public void bluetoothMessage(String message) {
-        this.receiveTextView.setText(message);
+    public void bluetoothMessage(byte[] bytes) {
+        this.messagesReceived++;
+        this.receiveTextView.setText(this.messagesReceived + ": " + bytes.toString());
     }
-    
+
     @Override
-    public void onClick(View v) {
-        String message = "Hello Friend";
-        BluetoothHandler.getInstance().write(message.getBytes());
+    public void onStateChange(BluetoothHandler.BluetoothInState state) {
     }
-    
+
     @Override
-    public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); }
-    
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_command, container, false);
-
     }
-    
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        this.sendButton = (Button) view.findViewById(R.id.send_button);
-        this.sendButton.setOnClickListener(this);
-        
+
         this.receiveTextView = view.findViewById(R.id.receive_text);
         super.onViewCreated(view, savedInstanceState);
 
@@ -96,7 +95,7 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
                 if(arg1.getAction() == MotionEvent.ACTION_DOWN
                         || arg1.getAction() == MotionEvent.ACTION_MOVE) {
 
-                    message = "/" + joystick.getX() + "," + joystick.getY() + "\\";
+                    message = "/" + joystick.getX() + "," + joystick.getY() + "&";
                     System.out.println(message);
 
                     try {
@@ -140,11 +139,8 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
                 return true;
             }
         });
-
     }
 
-
-    
     @Override
     public void onDestroy() {
         BluetoothHandler.getInstance().removeCallback(this);
