@@ -30,6 +30,7 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
     ImageView image_joystick, image_border;
     TextView textView_x, textView_y, textView_angle, textView_distance, textView_direction;
     String message;
+    int manualOrAutomatic = 0;
 
     public CommandFragment() {
         BluetoothHandler.getInstance().addCallback(this);
@@ -95,7 +96,7 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
                 if(arg1.getAction() == MotionEvent.ACTION_DOWN
                         || arg1.getAction() == MotionEvent.ACTION_MOVE) {
 
-                    message = "/" + joystick.getX() + "," + joystick.getY() + "&";
+                    message = "/" + manualOrAutomatic + "," + joystick.getX() + "," + joystick.getY() + "&";
                     System.out.println(message);
 
                     try {
