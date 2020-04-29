@@ -1,10 +1,8 @@
 package com.hero.elias.conanapp;
 
 import android.Manifest;
-import android.bluetooth.BluetoothDevice;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -16,22 +14,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.UUID;
-
-import si.inova.neatle.Neatle;
-import si.inova.neatle.operation.CharacteristicSubscription;
-import si.inova.neatle.operation.CharacteristicsChangedListener;
-import si.inova.neatle.operation.CommandResult;
-import si.inova.neatle.operation.Operation;
-import si.inova.neatle.operation.OperationResults;
-import si.inova.neatle.operation.SimpleOperationObserver;
-import si.inova.neatle.source.ByteArrayInputSource;
-
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     
     private BottomNavigationView bottomNavigation;
     private String currentScreen;
-    private CharacteristicSubscription subscription;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +28,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         WifiHandler.setMainActivity(this);
         
         this.bottomNavigation = this.findViewById(R.id.bottom_navigation);
-        // Disables icon tinting, allowing for textured icons
         this.bottomNavigation.setItemIconTintList(null);
         
         this.bottomNavigation.setOnNavigationItemSelectedListener(this);
@@ -53,8 +38,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     
         this.checkLocationPermission();
         
-        MbotHandler.getInstance();
-        BluetoothHandler.getInstance().connect();
+        MbotHandler.getInstance().startThread();
     }
     
     @Override
@@ -65,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     
     @Override
     protected void onResume() {
-//        BluetoothHandler.getInstance().connect();
+        BluetoothHandler.getInstance().connect();
         super.onResume();
     }
     
@@ -155,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     dialog.show();
                     this.checkLocationPermission();
                 }
-                return;
             }
         }
     }

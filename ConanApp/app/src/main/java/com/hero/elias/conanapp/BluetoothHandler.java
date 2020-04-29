@@ -24,9 +24,6 @@ import si.inova.neatle.operation.Operation;
 import si.inova.neatle.operation.OperationResults;
 import si.inova.neatle.operation.SimpleOperationObserver;
 import si.inova.neatle.source.ByteArrayInputSource;
-import si.inova.neatle.source.InputSource;
-
-// go away oliver
 
 public class BluetoothHandler extends BroadcastReceiver implements CharacteristicsChangedListener {
     

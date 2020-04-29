@@ -19,7 +19,6 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
     private TextView bluetoothStateText;
     
     public HomeFragment() {
-        BluetoothHandler.getInstance().addCallback(this);
     }
     
     public static HomeFragment newInstance() {
@@ -38,13 +37,14 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
     
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        BluetoothHandler.getInstance().addCallback(this);
+    
         this.bluetoothState = view.findViewById(R.id.bluetooth_state);
         
         this.bluetoothStateText = view.findViewById(R.id.bluetooth_state_text);
         this.bluetoothStateText.setText("Connecting");
     
         this.bluetoothState.setState(BluetoothState.State.CONNECTING);
-    
     
         super.onViewCreated(view, savedInstanceState);
     }
