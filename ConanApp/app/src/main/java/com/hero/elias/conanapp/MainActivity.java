@@ -55,6 +55,23 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         
         MbotHandler.getInstance();
         BluetoothHandler.getInstance().connect();
+        
+
+        
+        WifiHandler.createSession("Test Session", () -> {
+            WifiHandler.postPosition(0.1, 0.2, (posId) -> {
+                WifiHandler.getLastPosition((id, x, y, sessionId) -> {
+                    Log.i("WIFI", String.valueOf(x));
+                    Log.i("WIFI", String.valueOf(y));
+                });
+            });
+    
+            WifiHandler.postCollision(2, 4, () -> {
+            });
+        });
+        
+
+
     }
     
     @Override
@@ -65,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     
     @Override
     protected void onResume() {
-//        BluetoothHandler.getInstance().connect();
+        BluetoothHandler.getInstance().connect();
         super.onResume();
     }
     

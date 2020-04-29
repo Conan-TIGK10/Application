@@ -29,13 +29,12 @@ public class WifiHandler {
     private static boolean sessionSet = false;
     
     public static void getLastPosition(PositionGetListener getListener) {
-        new AsyncHTTPGet("http://3.122.218.59/position", response -> {
+        new AsyncHTTPGet("http://3.122.218.59/api/position", response -> {
             try {
                 JSONArray jsonArray = new JSONArray(response);
                 if (jsonArray.length() > 0){
                     JSONObject jsonObject = jsonArray.getJSONObject(jsonArray.length()-1);
                     getListener.onFinished(jsonObject.getInt("id"), jsonObject.getDouble("x"), jsonObject.getDouble("y"), jsonObject.getInt("sessionId"));
-                }else{
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -63,35 +62,47 @@ public class WifiHandler {
             e.printStackTrace();
         }
         
-        new AsyncHTTPPost("http://3.122.218.59/position", jsonParam, responseString -> {
+        new AsyncHTTPPost("http://3.122.218.59/api/position", jsonParam, responseString -> {
             Log.i("WIFI", String.valueOf(responseString));
-            postListener.onFinished();
+    
+            try {
+                JSONArray jsonArray = new JSONArray(responseString);
+                if (jsonArray.length() > 0){
+                    JSONObject jsonObject = jsonArray.getJSONObject(jsonArray.length()-1);
+                    postListener.onFinished(jsonObject.getInt("id"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }).execute();
     }
     interface PositionPostListener {
-        void onFinished();
+        void onFinished(int posId);
     }
     
-    public static void postCollision(double x, double y){
+    public static void postCollision(double x, double y, CollisionPostListener collisionListener){
         if (!sessionSet){ return; }
         
-        postPosition(x, y, () -> {
-            getLastPosition((id, x1, y1, sessionId) -> {
-                JSONObject jsonParam = new JSONObject();
-                try {
-                    jsonParam.put("positionId", id);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-        
-                new AsyncHTTPPost("http://3.122.218.59/position", jsonParam, responseString -> {
-                    Log.i("WIFI", String.valueOf(responseString));
-                }).execute();
-            });
+        postPosition(x, y, (id) -> {
+            JSONObject jsonParam = new JSONObject();
+            try {
+                jsonParam.put("positionId", id);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+    
+            new AsyncHTTPPost("http://3.122.218.59/api/collision", jsonParam, responseString -> {
+                Log.i("WIFI", String.valueOf(responseString));
+                collisionListener.onFinished();
+            }).execute();
         });
     }
     
-    public static void createSession(String sessionName){
+    interface CollisionPostListener {
+        void onFinished();
+    }
+    
+    public static void createSession(String sessionName, SessionCreateListener createListener){
         JSONObject jsonParam = new JSONObject();
         try {
             jsonParam.put("name", sessionName);
@@ -99,17 +110,25 @@ public class WifiHandler {
             e.printStackTrace();
         }
     
-        new AsyncHTTPPost("http://3.122.218.59/session", jsonParam, responseString -> {
+        new AsyncHTTPPost("http://3.122.218.59/api/session", jsonParam, responseString -> {
             Log.i("WIFI", String.valueOf(responseString));
             try {
-                JSONObject json = new JSONObject(responseString);
-                Log.i("WIFI", String.valueOf(json.getInt("id")));
-                sessionId = json.getInt("id");
-                sessionSet = true;
+                JSONArray jsonArray = new JSONArray(responseString);
+                if (jsonArray.length() > 0){
+                    JSONObject jsonObject = jsonArray.getJSONObject(jsonArray.length()-1);
+                    Log.i("WIFI", String.valueOf(jsonObject.getInt("id")));
+                    sessionId = jsonObject.getInt("id");
+                    sessionSet = true;
+                    createListener.onFinished();
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }).execute();
+    }
+    
+    interface SessionCreateListener {
+        void onFinished();
     }
     
     public static void setMainActivity(MainActivity ma) {
