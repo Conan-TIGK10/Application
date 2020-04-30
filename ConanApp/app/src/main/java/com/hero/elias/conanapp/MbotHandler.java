@@ -69,7 +69,7 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
                 this.onCollision();
             }
             if (lightDataLeft && lightDataRight){
-            
+                this.onGap();
             }
         }
     
