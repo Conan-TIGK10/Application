@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/sessionForm"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="200dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Name"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/sessionSubmit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/Submit"
+        app:layout_constraintEnd_toEndOf="@+id/sessionForm"
+        app:layout_constraintTop_toBottomOf="@+id/sessionForm" />
+
+    <TextView
+        android:id="@+id/sessionText"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="200dp"
+        android:text="@string/sessionText"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/sessionForm"
+        app:layout_constraintEnd_toEndOf="@+id/sessionForm"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/sessionForm" />
+
+    <TextView
+        android:id="@+id/sessionErrors"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:textAlignment="center"
+        android:textColor="@android:color/holo_red_dark"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@+id/sessionText"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/sessionText"
+        app:layout_constraintTop_toBottomOf="@+id/sessionText" />
+</androidx.constraintlayout.widget.ConstraintLayout>

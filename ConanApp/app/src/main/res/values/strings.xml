@@ -5,4 +5,7 @@
     <string name="navigation_steer">Steer</string>
     <string name="navigation_map">Map</string>
 
+    <string name="Submit">Submit</string>
+    <string name="sessionText">Please type a name for your session. The name must be between 2 and 20 characters.</string>
+
 </resources>
