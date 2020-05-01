@@ -1,6 +1,9 @@
 package com.hero.elias.conanapp;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -13,22 +16,46 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
+import java.io.BufferedWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class WifiHandler {
+import javax.net.ssl.HttpsURLConnection;
+
+public class WifiHandler extends BroadcastReceiver {
     
-    private static MainActivity mainActivity;
-    private static int sessionId;
-    private static boolean sessionSet = false;
+    private static WifiHandler sSoleInstance;
     
-    public static void getLastPosition(PositionGetListener getListener) {
+    private MainActivity mainActivity;
+    
+    private int sessionId;
+    private boolean sessionSet;
+    
+    private WifiInState wifiState;
+    
+    private ArrayList<WifiCallback> wifiCallback;
+    
+    private WifiHandler() {
+        this.sessionSet = false;
+        this.wifiCallback = new ArrayList<WifiCallback>();
+    }
+    
+    public static WifiHandler getInstance() {
+        if (WifiHandler.sSoleInstance == null) {
+            WifiHandler.sSoleInstance = new WifiHandler();
+        }
+        return WifiHandler.sSoleInstance;
+    }
+    
+    public void getLastPosition(PositionGetListener getListener) {
         new AsyncHTTPGet("http://3.122.218.59/api/position", response -> {
             try {
                 JSONArray jsonArray = new JSONArray(response);
@@ -41,12 +68,13 @@ public class WifiHandler {
             }
         }).execute();
     }
+    
     interface PositionGetListener {
         void onFinished(int id, double x, double y, int sessionId);
     }
     
-    public static void postPosition(double x, double y, PositionPostListener postListener) {
-        if (!sessionSet){ return; }
+    public void postPosition(double x, double y, PositionPostListener postListener) {
+        if (!this.sessionSet){ return; }
         
         Date now = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMANY);
@@ -56,21 +84,16 @@ public class WifiHandler {
         try {
             jsonParam.put("x", x);
             jsonParam.put("y", y);
-            jsonParam.put("sessionId", sessionId);
+            jsonParam.put("sessionId", this.sessionId);
             jsonParam.put("read_at", date);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         
         new AsyncHTTPPost("http://3.122.218.59/api/position", jsonParam, responseString -> {
-            Log.i("WIFI", String.valueOf(responseString));
-    
             try {
-                JSONArray jsonArray = new JSONArray(responseString);
-                if (jsonArray.length() > 0){
-                    JSONObject jsonObject = jsonArray.getJSONObject(jsonArray.length()-1);
-                    postListener.onFinished(jsonObject.getInt("id"));
-                }
+                JSONObject jsonObject = new JSONObject(responseString);
+                postListener.onFinished(jsonObject.getInt("id"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -80,8 +103,8 @@ public class WifiHandler {
         void onFinished(int posId);
     }
     
-    public static void postCollision(double x, double y, CollisionPostListener collisionListener){
-        if (!sessionSet){ return; }
+    public void postCollision(double x, double y, CollisionPostListener collisionListener){
+        if (!this.sessionSet){ return; }
         
         postPosition(x, y, (id) -> {
             JSONObject jsonParam = new JSONObject();
@@ -92,7 +115,6 @@ public class WifiHandler {
             }
     
             new AsyncHTTPPost("http://3.122.218.59/api/collision", jsonParam, responseString -> {
-                Log.i("WIFI", String.valueOf(responseString));
                 collisionListener.onFinished();
             }).execute();
         });
@@ -102,7 +124,7 @@ public class WifiHandler {
         void onFinished();
     }
     
-    public static void createSession(String sessionName, SessionCreateListener createListener){
+    public void createSession(String sessionName, SessionCreateListener createListener){
         JSONObject jsonParam = new JSONObject();
         try {
             jsonParam.put("name", sessionName);
@@ -111,59 +133,115 @@ public class WifiHandler {
         }
     
         new AsyncHTTPPost("http://3.122.218.59/api/session", jsonParam, responseString -> {
-            Log.i("WIFI", String.valueOf(responseString));
             try {
-                JSONArray jsonArray = new JSONArray(responseString);
-                if (jsonArray.length() > 0){
-                    JSONObject jsonObject = jsonArray.getJSONObject(jsonArray.length()-1);
-                    Log.i("WIFI", String.valueOf(jsonObject.getInt("id")));
-                    sessionId = jsonObject.getInt("id");
-                    sessionSet = true;
-                    createListener.onFinished();
-                }
+                JSONObject jsonObject = new JSONObject(responseString);
+                this.sessionId = jsonObject.getInt("id");
+                this.sessionSet = true;
+                createListener.onFinished();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }).execute();
     }
-    
     interface SessionCreateListener {
         void onFinished();
     }
     
-    public static void setMainActivity(MainActivity ma) {
-        mainActivity = ma;
+    public void setMainActivity(final MainActivity mainActivity){
+        this.mainActivity = mainActivity;
+        this.registerReceivers();
     }
     
-    private boolean checkConnection(){
-        WifiManager wifiMgr = (WifiManager) mainActivity.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-    
-        if (wifiMgr.isWifiEnabled()) {
-            WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-            if( wifiInfo.getNetworkId() == -1 ){
-                AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
-    
-                builder.setMessage("Wifi")
-                        .setTitle("In order to Send data to the Backend Database Wifi must be Turned on, Please turn on.");
-                AlertDialog dialog = builder.create();
-    
-                dialog.show();
-                return false;
-            }
-            return true;
+    private void registerReceivers(){
+        if (this.mainActivity != null) {
+            mainActivity.registerReceiver(this, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
+        } else {
+            Log.i("WIFI", "Main Activity Not Linked");
         }
-        else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+    }
     
-            builder.setMessage("Wifi")
-                    .setTitle("In order to Send data to the Backend Database Wifi must be Turned on, Please turn on.");
-            AlertDialog dialog = builder.create();
+    public void unregisterReceivers() {
+        if (this.mainActivity != null) {
+            this.mainActivity.unregisterReceiver(this);
+        } else {
+            Log.i("WIFI", "Main Activity Not Linked");
+        }
+    }
     
-            dialog.show();
-            return false;
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        final String action = intent.getAction();
+        if (action.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
+            if (intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)) {
+                this.updateState(WifiInState.CONNECTED);
+            } else {
+                this.updateState(WifiInState.DISCONNECTED);
+            }
+        }
+    }
+    
+    public void checkConnection(){
+        if (this.mainActivity != null){
+            WifiManager wifiMgr = (WifiManager) mainActivity.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            if (wifiMgr.isWifiEnabled()) {
+                WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+                if( wifiInfo.getNetworkId() == -1 ){
+                    this.updateState(WifiInState.DISCONNECTED);
+                }else{
+                    this.updateState(WifiInState.CONNECTED);
+                }
+            }
+            else {
+                this.updateState(WifiInState.DISCONNECTED);
+            }
+        }else{
+            Log.i("WIFI", "Main Activity Not Linked");
+        }
+    }
+    
+    private void alertDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+        
+        builder.setTitle("Wifi")
+                .setMessage("In order to Send data to the Backend Database, Wifi must be Turned on")
+                .setPositiveButton("OK", null);
+        AlertDialog dialog = builder.create();
+        
+        dialog.show();
+    }
+    
+    enum WifiInState {
+        CONNECTED,
+        DISCONNECTED,
+    }
+    
+    public WifiInState getState() {
+        return this.wifiState;
+    }
+    
+    interface WifiCallback {
+        void onStateChange(WifiInState state);
+    }
+    
+    public void removeCallback(final WifiCallback callback) {
+        this.wifiCallback.remove(callback);
+    }
+    public void addCallback(final WifiCallback callback) {
+        this.wifiCallback.add(callback);
+    }
+    
+    private void updateState(WifiInState newState) {
+        this.wifiState = newState;
+        for (int i = 0; i < this.wifiCallback.size(); i++) {
+            this.wifiCallback.get(i).onStateChange(this.wifiState);
+        }
+        
+        if (this.wifiState == WifiInState.DISCONNECTED){
+            this.alertDialog();
         }
     }
 }
+
 
 class AsyncHTTPPost extends AsyncTask<Void, Void, String> {
     
@@ -181,29 +259,40 @@ class AsyncHTTPPost extends AsyncTask<Void, Void, String> {
     protected String doInBackground(Void... params) {
         try {
             URL url = new URL(this.urlString);
-            
+    
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setReadTimeout(15000);
+            conn.setConnectTimeout(15000);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
             conn.setRequestProperty("Accept", "application/json");
-            conn.setDoOutput(true);
             conn.setDoInput(true);
-            
-            DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-            os.writeBytes(this.jsonObject.toString());
-            os.flush();
+            conn.setDoOutput(true);
+    
+            OutputStream os = conn.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+            writer.write(this.jsonObject.toString());
+    
+            writer.flush();
+            writer.close();
             os.close();
+            
+            int responseCode = conn.getResponseCode();
     
-            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-            StringBuilder sb = new StringBuilder();
-    
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line + "\n");
+            String response = "";
+            if (responseCode == HttpsURLConnection.HTTP_OK) {
+                String line;
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                while ((line=br.readLine()) != null) {
+                    response += line;
+                }
             }
-            br.close();
-    
-            return sb.toString();
+            else {
+                response = null;
+            }
+            
+            return response;
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

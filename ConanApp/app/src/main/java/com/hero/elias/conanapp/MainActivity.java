@@ -1,7 +1,6 @@
 package com.hero.elias.conanapp;
 
 import android.Manifest;
-import android.bluetooth.BluetoothDevice;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,16 +15,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.UUID;
-
-import si.inova.neatle.Neatle;
 import si.inova.neatle.operation.CharacteristicSubscription;
-import si.inova.neatle.operation.CharacteristicsChangedListener;
-import si.inova.neatle.operation.CommandResult;
-import si.inova.neatle.operation.Operation;
-import si.inova.neatle.operation.OperationResults;
-import si.inova.neatle.operation.SimpleOperationObserver;
-import si.inova.neatle.source.ByteArrayInputSource;
+
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     
@@ -39,12 +30,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         this.setContentView(R.layout.activity_main);
         
         BluetoothHandler.getInstance().setMainActivity(this);
-        WifiHandler.setMainActivity(this);
-        
+        WifiHandler.getInstance().setMainActivity(this);
+    
+        BluetoothHandler.getInstance().checkConnection();
+        WifiHandler.getInstance().checkConnection();
+    
+        MbotHandler.getInstance();
+    
         this.bottomNavigation = this.findViewById(R.id.bottom_navigation);
-        // Disables icon tinting, allowing for textured icons
         this.bottomNavigation.setItemIconTintList(null);
-        
         this.bottomNavigation.setOnNavigationItemSelectedListener(this);
         
         this.openFragment(HomeFragment.newInstance(), "Home");
@@ -53,43 +47,30 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     
         this.checkLocationPermission();
         
-        MbotHandler.getInstance();
-        BluetoothHandler.getInstance().connect();
-        
-
-        
-        WifiHandler.createSession("Test Session", () -> {
-            WifiHandler.postPosition(0.1, 0.2, (posId) -> {
-                WifiHandler.getLastPosition((id, x, y, sessionId) -> {
-                    Log.i("WIFI", String.valueOf(x));
-                    Log.i("WIFI", String.valueOf(y));
+/*        WifiHandler.getInstance().createSession("Test Session", () -> {
+            WifiHandler.getInstance().postPosition(0.1, 0.2, (posId) -> {
+                WifiHandler.getInstance().getLastPosition((id, x, y, sessionId) -> {
+                    Log.i("WIFI", "SESSION POST GET WORKS");
                 });
             });
     
-            WifiHandler.postCollision(2, 4, () -> {
+            WifiHandler.getInstance().postCollision(2, 4, () -> {
+                Log.i("WIFI", "COLLISION WORKS");
             });
         });
-        
-
-
+    */
     }
     
     @Override
-    protected void onPause() {
-        BluetoothHandler.getInstance().dissconnect();
-        super.onPause();
+    protected void onStart() {
+        BluetoothHandler.getInstance().start();
+        super.onStart();
     }
     
     @Override
-    protected void onResume() {
-        BluetoothHandler.getInstance().connect();
-        super.onResume();
-    }
-    
-    @Override
-    protected void onDestroy() {
-        BluetoothHandler.getInstance().dissconnect();
-        super.onDestroy();
+    protected void onStop() {
+        BluetoothHandler.getInstance().stop();
+        super.onStop();
     }
     
     @Override

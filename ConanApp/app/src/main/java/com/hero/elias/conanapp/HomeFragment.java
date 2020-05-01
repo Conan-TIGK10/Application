@@ -41,10 +41,8 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
         this.bluetoothState = view.findViewById(R.id.bluetooth_state);
         
         this.bluetoothStateText = view.findViewById(R.id.bluetooth_state_text);
-        this.bluetoothStateText.setText("Connecting");
-    
-        this.bluetoothState.setState(BluetoothState.State.CONNECTING);
-    
+        this.bluetoothState.setState(BluetoothState.State.SEARCHING);
+        this.bluetoothStateText.setText("Searching...");
     
         super.onViewCreated(view, savedInstanceState);
     }

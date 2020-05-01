@@ -1,6 +1,5 @@
 package com.hero.elias.conanapp;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -24,9 +23,6 @@ import si.inova.neatle.operation.Operation;
 import si.inova.neatle.operation.OperationResults;
 import si.inova.neatle.operation.SimpleOperationObserver;
 import si.inova.neatle.source.ByteArrayInputSource;
-import si.inova.neatle.source.InputSource;
-
-// go away oliver
 
 public class BluetoothHandler extends BroadcastReceiver implements CharacteristicsChangedListener {
     
@@ -37,25 +33,21 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
     private UUID READ_UUID = UUID.fromString("0000ffe2-0000-1000-8000-00805f9b34fb");
     private UUID WRITE_UUID = UUID.fromString("0000ffe3-0000-1000-8000-00805f9b34fb");
     
-    private Activity mainActivity;
+    private MainActivity mainActivity;
     
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothDevice bluetoothDevice;
     
-    private final ArrayList<BluetoothCallback> bluetoothCallback;
+    private ArrayList<BluetoothCallback> bluetoothCallback;
     
     private CharacteristicSubscription subscription;
-    
-    private boolean deviceConnected;
     
     private BluetoothInState bluetoothState;
     
     private BluetoothHandler() {
-        this.deviceConnected = false;
         this.bluetoothCallback = new ArrayList<BluetoothCallback>();
         this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        this.bluetoothState = BluetoothInState.BLUETOOTHDISABLED;
-        this.updateState();
+        this.bluetoothState = BluetoothInState.NOTFOUND;
     }
     
     public static BluetoothHandler getInstance() {
@@ -65,126 +57,58 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
         return BluetoothHandler.sSoleInstance;
     }
     
-    public void addCallback(final BluetoothCallback callback) {
-        this.bluetoothCallback.add(callback);
-    }
-    
-    private void bluetoothEnableIntent() {
-        if (this.mainActivity != null) {
-            Log.i("BT", "Bluetooth Not Available");
-    
-            AlertDialog.Builder builder = new AlertDialog.Builder(this.mainActivity);
-    
-            builder.setMessage("Bluetooth")
-                    .setTitle("In order to Communicate with the robot Bluetooth must be turned on, Please turn on.");
-            AlertDialog dialog = builder.create();
-    
-            dialog.show();
-            
-            final Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            this.mainActivity.startActivityForResult(enableBTIntent, 1);
-        } else {
-            Log.i("BT", "Main Activity Not Linked");
+    public void start() {
+        this.checkConnection();
+        if (this.bluetoothState != BluetoothInState.BLUETOOTHDISABLED){
+            this.discoverDevices();
         }
     }
     
-    private boolean checkConnection() {
-        return this.subscription.isStarted();
-    }
-    
-    public void connect() {
-        this.init();
-        if (this.bluetoothAdapter.isEnabled()) {
-            this.bluetoothState = BluetoothInState.SEARCHING;
-            this.updateState();
+    public void connect(){
+        if (this.bluetoothState != BluetoothInState.BLUETOOTHDISABLED){
+            this.bluetoothAdapter.cancelDiscovery();
             this.bluetoothDevice = Neatle.getDevice(this.MAC_ADDRESS);
             this.subscription = Neatle.createSubscription(this.mainActivity, this.bluetoothDevice, this.SERVICE_UUID, this.READ_UUID);
             this.subscription.setOnCharacteristicsChangedListener(this);
             this.subscription.start();
-        } else {
-            this.bluetoothEnableIntent();
         }
     }
     
-    public void setMainActivity(final MainActivity mainActivity){
-        this.mainActivity = mainActivity;
-    }
-    
-    private void discoverDevices() {
-        final Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-        this.mainActivity.startActivity(discoverableIntent);
-        this.bluetoothAdapter.startDiscovery();
-    }
-    
-    public void dissconnect() {
-        if (this.subscription.isStarted()) {
-            this.bluetoothState = BluetoothInState.DISCONNECTED;
-            this.updateState();
-            this.deviceConnected = false;
+    public void stop() {
+        if (this.subscription != null) {
             this.subscription.stop();
-            this.unregisterReceivers();
         }
-    }
-    
-    public BluetoothInState getState() {
-        return this.bluetoothState;
-    }
-    
-    private void init() {
-        this.bluetoothState = BluetoothInState.BLUETOOTHDISABLED;
-        this.updateState();
-        while (this.bluetoothAdapter == null) {
-            this.bluetoothEnableIntent();
-            this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        }
-        this.registerReceivers();
+        this.updateState(BluetoothInState.DISCONNECTED);
     }
     
     @Override
     public void onCharacteristicChanged(final CommandResult change) {
         if (change.wasSuccessful()) {
             if (this.bluetoothState != BluetoothInState.CONNECTED) {
-                this.bluetoothState = BluetoothInState.CONNECTED;
-                this.updateState();
+                this.updateState(BluetoothInState.CONNECTED);
             }
             
-            Log.i("BT", "RECEIVED FROM ROBOT: " + change.getValueAsString());
             this.updateMessage(change.getValue());
         } else {
-            this.bluetoothState = BluetoothInState.DISCONNECTED;
-            this.updateState();
+            this.updateState(BluetoothInState.DISCONNECTED);
         }
     }
     
-    @Override
-    public void onReceive(final Context context, final Intent intent) {
-        final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-        switch (intent.getAction()) {
-            case BluetoothDevice.ACTION_FOUND:
-                //Log.i("BT", "Found New Device " + device.getName());
-                break;
-            case BluetoothDevice.ACTION_BOND_STATE_CHANGED:
-                //Log.i("BT", "Bond State Changed " + device.getName());
-                break;
-            case BluetoothDevice.ACTION_ACL_CONNECTED:
-                Log.i("BT", "Device Connected " + device.getName());
-                if (this.bluetoothDevice.getAddress().equals(device.getAddress())) {
-                    this.bluetoothState = BluetoothInState.CONNECTED;
-                    this.updateState();
-                    if (!this.checkConnection()){
-                        this.connect();
-                    }
-                }
-                break;
-            case BluetoothDevice.ACTION_ACL_DISCONNECTED:
-                Log.i("BT", "Device Dissconnected " + device.getName());
-                if (this.bluetoothDevice.getAddress().equals(device.getAddress())) {
-                    this.bluetoothState = BluetoothInState.DISCONNECTED;
-                    this.updateState();
-                    this.connect();
-                }
-                break;
+    public void write(final byte[] bytes) {
+        if (this.bluetoothState == BluetoothInState.CONNECTED){
+            ByteArrayInputSource inputSource = new ByteArrayInputSource(bytes);
+            final Operation writeOperation = Neatle.createOperationBuilder(this.mainActivity)
+                    .write(this.SERVICE_UUID, this.WRITE_UUID, inputSource)
+                    .onFinished(new SimpleOperationObserver() {
+                        @Override
+                        public void onOperationFinished(final Operation op, final OperationResults results) {
+                            if (results.wasSuccessful()) {
+                            } else {
+                            }
+                        }
+                    })
+                    .build(this.bluetoothDevice);
+            writeOperation.execute();
         }
     }
     
@@ -209,26 +133,73 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
             } else {
                 Log.i("BT", "No Devices Found");
             }
-        } else {
-            this.bluetoothEnableIntent();
         }
     }
     
-    private void registerReceivers() {
+    private void discoverDevices() {
+        //final Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+        //discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 20);
+        //this.mainActivity.startActivity(discoverableIntent);
+        
+        if (this.bluetoothState != BluetoothInState.CONNECTED){
+            this.bluetoothAdapter.startDiscovery();
+            this.updateState(BluetoothInState.SEARCHING);
+        }
+    }
+    
+    public void setMainActivity(final MainActivity mainActivity){
+        this.mainActivity = mainActivity;
+        this.registerReceivers();
+    }
+    
+    private void enableBluetooth() {
+        if (this.mainActivity != null) {
+            final Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            this.mainActivity.startActivityForResult(enableBTIntent, 2);
+        } else {
+            Log.i("BT", "Main Activity Not Linked");
+        }
+    }
+    
+    public void checkConnection(){
+        if (this.bluetoothAdapter == null || !this.bluetoothAdapter.isEnabled()){
+            this.updateState(BluetoothInState.BLUETOOTHDISABLED);
+        }
+    }
+    
+    private void alertDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.mainActivity);
+        
+        builder.setTitle("Bluetooth")
+                .setMessage("In order to Communicate with the Robot Bluetooth must be Turned On")
+                .setPositiveButton("Ok", (dialog, which) -> {
+                    this.enableBluetooth();
+                    this.discoverDevices();
+                });
+        
+        AlertDialog dialog = builder.create();
+        
+        dialog.show();
+    }
+    
+    public void registerReceivers() {
         if (this.mainActivity != null) {
             this.mainActivity.registerReceiver(this, new IntentFilter(BluetoothDevice.ACTION_FOUND));
             this.mainActivity.registerReceiver(this, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
             this.mainActivity.registerReceiver(this, new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED));
             this.mainActivity.registerReceiver(this, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
             this.mainActivity.registerReceiver(this, new IntentFilter(BluetoothDevice.ACTION_UUID));
+    
+            this.mainActivity.registerReceiver(this, new IntentFilter(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED));
+            this.mainActivity.registerReceiver(this, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+            this.mainActivity.registerReceiver(this, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED));
+            this.mainActivity.registerReceiver(this, new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED));
+            this.mainActivity.registerReceiver(this, new IntentFilter(BluetoothAdapter.ACTION_REQUEST_ENABLE));
         } else {
             Log.i("BT", "Main Activity Not Linked");
         }
     }
     
-    public void removeCallback(final BluetoothCallback callback) {
-        this.bluetoothCallback.remove(callback);
-    }
     
     private void unregisterReceivers() {
         if (this.mainActivity != null) {
@@ -238,35 +209,41 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
         }
     }
     
-    private void updateMessage(byte[] bytes) {
-        for (int i = 0; i < this.bluetoothCallback.size(); i++) {
-            this.bluetoothCallback.get(i).bluetoothMessage(bytes);
-        }
-    }
+    @Override
+    public void onReceive(final Context context, final Intent intent) {
+        switch (intent.getAction()) {
+            case BluetoothDevice.ACTION_ACL_CONNECTED:
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
     
-    private void updateState() {
-        for (int i = 0; i < this.bluetoothCallback.size(); i++) {
-            this.bluetoothCallback.get(i).onStateChange(this.bluetoothState);
-        }
-    }
+                if (this.bluetoothDevice.getAddress().equals(device.getAddress())) {
+                    if (this.bluetoothState != BluetoothInState.CONNECTED){
+                        this.updateState(BluetoothInState.CONNECTING);
+                        this.connect();
+                    }
+                }
+                break;
+            case BluetoothDevice.ACTION_ACL_DISCONNECTED:
+                device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
     
-    public void write(final byte[] bytes) {
-        if (this.deviceConnected) {
-            ByteArrayInputSource inputSource = new ByteArrayInputSource(bytes);
-            final Operation writeOperation = Neatle.createOperationBuilder(this.mainActivity)
-                    .write(this.SERVICE_UUID, this.WRITE_UUID, inputSource)
-                    .onFinished(new SimpleOperationObserver() {
-                        @Override
-                        public void onOperationFinished(final Operation op, final OperationResults results) {
-                            if (results.wasSuccessful()) {
-                                System.out.println("Write was successful!");
-                            } else {
-                                System.out.println("Write failed! ");
-                            }
-                        }
-                    })
-                    .build(this.bluetoothDevice);
-            writeOperation.execute();
+                if (this.bluetoothDevice.getAddress().equals(device.getAddress())) {
+                    this.updateState(BluetoothInState.DISCONNECTED);
+                    this.start();
+                }
+                break;
+            case BluetoothAdapter.ACTION_DISCOVERY_FINISHED:
+                break;
+            case BluetoothAdapter.ACTION_STATE_CHANGED:
+                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
+                switch (state) {
+                    case BluetoothAdapter.STATE_OFF:
+                        this.updateState(BluetoothInState.BLUETOOTHDISABLED);
+                        break;
+                    case BluetoothAdapter.STATE_ON:
+                        this.start();
+                        break;
+                }
+                break;
+    
         }
     }
     
@@ -279,9 +256,38 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
         BLUETOOTHDISABLED
     }
     
+    public BluetoothInState getState() {
+        return this.bluetoothState;
+    }
+    
     interface BluetoothCallback {
         void bluetoothMessage(byte[] bytes);
         
         void onStateChange(BluetoothInState state);
+    }
+    
+    public void addCallback(final BluetoothCallback callback) {
+        this.bluetoothCallback.add(callback);
+    }
+    public void removeCallback(final BluetoothCallback callback) {
+        this.bluetoothCallback.remove(callback);
+    }
+    
+    private void updateMessage(byte[] bytes) {
+        for (int i = 0; i < this.bluetoothCallback.size(); i++) {
+            this.bluetoothCallback.get(i).bluetoothMessage(bytes);
+        }
+    }
+    
+    private void updateState(BluetoothInState newState) {
+        if (newState == BluetoothInState.BLUETOOTHDISABLED && this.bluetoothState != BluetoothInState.BLUETOOTHDISABLED){
+            this.alertDialog();
+        }
+        
+        this.bluetoothState = newState;
+        for (int i = 0; i < this.bluetoothCallback.size(); i++) {
+            this.bluetoothCallback.get(i).onStateChange(this.bluetoothState);
+        }
+
     }
 }
