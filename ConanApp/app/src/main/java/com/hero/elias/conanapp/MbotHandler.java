@@ -1,19 +1,13 @@
 package com.hero.elias.conanapp;
 
-import android.util.Log;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MbotHandler implements BluetoothHandler.BluetoothCallback {
     private static MbotHandler sSoleInstance;
     private ArrayList<MbotHandler.MbotCallback> mbotCallbacks;
-    
-    private byte[] START_SIGNIFIER = "/".getBytes();
-    private byte[] END_SIGNIFIER = "\\".getBytes(); // is escaped
     
     private ByteArrayOutputStream byteArray;
     
@@ -29,7 +23,6 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback {
         }
         return MbotHandler.sSoleInstance;
     }
-    
     
     @Override
     public void bluetoothMessage(byte[] bytes) {
@@ -62,7 +55,6 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback {
             boolean lightDataLeft = Boolean.parseBoolean(splitMessage[3]); // 0,1
             boolean lightDataRight = Boolean.parseBoolean(splitMessage[4]); // 0,1
         }
-    
     }
     
     @Override
