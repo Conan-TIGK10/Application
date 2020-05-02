@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class WifiHandler extends BroadcastReceiver {
     
     private WifiInState wifiState;
     
-    private ArrayList<WifiCallback> wifiCallback;
+    private final ArrayList<WifiCallback> wifiCallback;
     
     private WifiHandler() {
         this.sessionSet = false;
@@ -55,7 +56,7 @@ public class WifiHandler extends BroadcastReceiver {
         return WifiHandler.sSoleInstance;
     }
     
-    public void getLastPosition(PositionGetListener getListener) {
+    public void getLastPosition(final PositionGetListener getListener) {
         new AsyncHTTPGet("http://3.122.218.59/api/position", response -> {
             try {
                 JSONArray jsonArray = new JSONArray(response);
@@ -73,20 +74,20 @@ public class WifiHandler extends BroadcastReceiver {
         void onFinished(int id, double x, double y, int sessionId);
     }
     
-    public void postPosition(double x, double y, PositionPostListener postListener) {
+    public void postPosition(final double x, final double y, final PositionPostListener postListener) {
         if (!this.sessionSet){ return; }
         
-        Date now = new Date();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMANY);
-        String date = dateFormat.format(now);
+        final Date now = new Date();
+        final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMANY);
+        final String date = dateFormat.format(now);
         
-        JSONObject jsonParam = new JSONObject();
+        final JSONObject jsonParam = new JSONObject();
         try {
             jsonParam.put("x", x);
             jsonParam.put("y", y);
             jsonParam.put("sessionId", this.sessionId);
             jsonParam.put("read_at", date);
-        } catch (JSONException e) {
+        } catch (final JSONException e) {
             e.printStackTrace();
         }
         
@@ -103,14 +104,14 @@ public class WifiHandler extends BroadcastReceiver {
         void onFinished(int posId);
     }
     
-    public void postCollision(double x, double y, CollisionPostListener collisionListener){
+    public void postCollision(final double x, final double y, final CollisionPostListener collisionListener){
         if (!this.sessionSet){ return; }
-        
-        postPosition(x, y, (id) -> {
-            JSONObject jsonParam = new JSONObject();
+    
+        this.postPosition(x, y, (id) -> {
+            final JSONObject jsonParam = new JSONObject();
             try {
                 jsonParam.put("positionId", id);
-            } catch (JSONException e) {
+            } catch (final JSONException e) {
                 e.printStackTrace();
             }
     
@@ -124,11 +125,11 @@ public class WifiHandler extends BroadcastReceiver {
         void onFinished();
     }
     
-    public void createSession(String sessionName, SessionCreateListener createListener){
-        JSONObject jsonParam = new JSONObject();
+    public void createSession(final String sessionName, final SessionCreateListener createListener){
+        final JSONObject jsonParam = new JSONObject();
         try {
             jsonParam.put("name", sessionName);
-        } catch (JSONException e) {
+        } catch (final JSONException e) {
             e.printStackTrace();
         }
     
@@ -154,7 +155,7 @@ public class WifiHandler extends BroadcastReceiver {
     
     private void registerReceivers(){
         if (this.mainActivity != null) {
-            mainActivity.registerReceiver(this, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
+            this.mainActivity.registerReceiver(this, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
         } else {
             Log.i("WIFI", "Main Activity Not Linked");
         }
@@ -169,7 +170,7 @@ public class WifiHandler extends BroadcastReceiver {
     }
     
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(final Context context, final Intent intent) {
         final String action = intent.getAction();
         if (action.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
             if (intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)) {
@@ -182,9 +183,9 @@ public class WifiHandler extends BroadcastReceiver {
     
     public void checkConnection(){
         if (this.mainActivity != null){
-            WifiManager wifiMgr = (WifiManager) mainActivity.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            final WifiManager wifiMgr = (WifiManager) this.mainActivity.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             if (wifiMgr.isWifiEnabled()) {
-                WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+                final WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
                 if( wifiInfo.getNetworkId() == -1 ){
                     this.updateState(WifiInState.DISCONNECTED);
                 }else{
@@ -200,12 +201,12 @@ public class WifiHandler extends BroadcastReceiver {
     }
     
     private void alertDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this.mainActivity);
         
         builder.setTitle("Wifi")
                 .setMessage("In order to Send data to the Backend Database, Wifi must be Turned on")
                 .setPositiveButton("OK", null);
-        AlertDialog dialog = builder.create();
+        final AlertDialog dialog = builder.create();
         
         dialog.show();
     }
@@ -230,7 +231,7 @@ public class WifiHandler extends BroadcastReceiver {
         this.wifiCallback.add(callback);
     }
     
-    private void updateState(WifiInState newState) {
+    private void updateState(final WifiInState newState) {
         this.wifiState = newState;
         for (int i = 0; i < this.wifiCallback.size(); i++) {
             this.wifiCallback.get(i).onStateChange(this.wifiState);
@@ -249,18 +250,18 @@ class AsyncHTTPPost extends AsyncTask<Void, Void, String> {
     private final String urlString;
     private final JSONObject jsonObject;
     
-    public AsyncHTTPPost(String urlString, JSONObject jsonObject, TaskListener listener) {
+    public AsyncHTTPPost(final String urlString, final JSONObject jsonObject, final TaskListener listener) {
         this.taskListener = listener;
         this.urlString = urlString;
         this.jsonObject = jsonObject;
     }
     
     @Override
-    protected String doInBackground(Void... params) {
+    protected String doInBackground(final Void... params) {
         try {
-            URL url = new URL(this.urlString);
+            final URL url = new URL(this.urlString);
     
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(15000);
             conn.setConnectTimeout(15000);
             conn.setRequestMethod("POST");
@@ -269,20 +270,20 @@ class AsyncHTTPPost extends AsyncTask<Void, Void, String> {
             conn.setDoInput(true);
             conn.setDoOutput(true);
     
-            OutputStream os = conn.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+            final OutputStream os = conn.getOutputStream();
+            final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
             writer.write(this.jsonObject.toString());
     
             writer.flush();
             writer.close();
             os.close();
             
-            int responseCode = conn.getResponseCode();
+            final int responseCode = conn.getResponseCode();
     
             String response = "";
             if (responseCode == HttpsURLConnection.HTTP_OK) {
                 String line;
-                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                final BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 while ((line=br.readLine()) != null) {
                     response += line;
                 }
@@ -293,7 +294,7 @@ class AsyncHTTPPost extends AsyncTask<Void, Void, String> {
             
             return response;
             
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     
@@ -301,7 +302,7 @@ class AsyncHTTPPost extends AsyncTask<Void, Void, String> {
     }
     
     @Override
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(final String result) {
         super.onPostExecute(result);
         if (this.taskListener != null && result != null) {
             this.taskListener.onFinished(result);
@@ -318,25 +319,25 @@ class AsyncHTTPGet extends AsyncTask<Void, Void, String> {
     private final TaskListener taskListener;
     private final String urlString;
     
-    public AsyncHTTPGet(String urlString, TaskListener listener) {
+    public AsyncHTTPGet(final String urlString, final TaskListener listener) {
         this.taskListener = listener;
         this.urlString = urlString;
     }
     
     @Override
-    protected String doInBackground(Void... params) {
+    protected String doInBackground(final Void... params) {
         try {
-            URL url = new URL(this.urlString);
+            final URL url = new URL(this.urlString);
             
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
             conn.setRequestProperty("Accept", "application/json");
             conn.setDoOutput(true);
             conn.connect();
             
-            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-            StringBuilder sb = new StringBuilder();
+            final BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+            final StringBuilder sb = new StringBuilder();
             
             String line;
             while ((line = br.readLine()) != null) {
@@ -345,7 +346,7 @@ class AsyncHTTPGet extends AsyncTask<Void, Void, String> {
             br.close();
             
             return sb.toString();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         
@@ -353,7 +354,7 @@ class AsyncHTTPGet extends AsyncTask<Void, Void, String> {
     }
     
     @Override
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(final String result) {
         super.onPostExecute(result);
         if (this.taskListener != null && result != null) {
             this.taskListener.onFinished(result);

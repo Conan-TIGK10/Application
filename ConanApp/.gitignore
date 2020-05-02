@@ -122,3 +122,9 @@ app/build/tmp/
 .idea/saveactions_settings.xml
 !/local.properties
 .idea/render.experimental.xml
+!/local.properties
+.idea/markdown-navigator-enh.xml
+.idea/markdown-navigator.xml
+!/local.properties
+!/local.properties
+!/local.properties

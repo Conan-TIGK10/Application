@@ -1,7 +1,6 @@
 package com.hero.elias.conanapp;
 
 import android.Manifest;
-import android.bluetooth.BluetoothDevice;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,70 +15,69 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.UUID;
-
-import si.inova.neatle.Neatle;
 import si.inova.neatle.operation.CharacteristicSubscription;
-import si.inova.neatle.operation.CharacteristicsChangedListener;
-import si.inova.neatle.operation.CommandResult;
-import si.inova.neatle.operation.Operation;
-import si.inova.neatle.operation.OperationResults;
-import si.inova.neatle.operation.SimpleOperationObserver;
-import si.inova.neatle.source.ByteArrayInputSource;
+
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
-
+    
     private BottomNavigationView bottomNavigation;
     private String currentScreen;
     private CharacteristicSubscription subscription;
-
+    
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_main);
-
+        
         BluetoothHandler.getInstance().setMainActivity(this);
-        WifiHandler.setMainActivity(this);
-
+        WifiHandler.getInstance().setMainActivity(this);
+    
+        BluetoothHandler.getInstance().checkConnection();
+        WifiHandler.getInstance().checkConnection();
+    
+        MbotHandler.getInstance().startThread();
+    
         this.bottomNavigation = this.findViewById(R.id.bottom_navigation);
-        // Disables icon tinting, allowing for textured icons
         this.bottomNavigation.setItemIconTintList(null);
-
         this.bottomNavigation.setOnNavigationItemSelectedListener(this);
-
+        
         this.openFragment(HomeFragment.newInstance(), "Home");
         this.currentScreen = "Home";
         this.bottomNavigation.setSelectedItemId(R.id.navigation_home);
-
+    
         this.checkLocationPermission();
-
-        MbotHandler.getInstance();
-        BluetoothHandler.getInstance().connect();
+        
+/*        WifiHandler.getInstance().createSession("Test Session", () -> {
+            WifiHandler.getInstance().postPosition(0.1, 0.2, (posId) -> {
+                WifiHandler.getInstance().getLastPosition((id, x, y, sessionId) -> {
+                    Log.i("WIFI", "SESSION POST GET WORKS");
+                });
+            });
+    
+            WifiHandler.getInstance().postCollision(2, 4, () -> {
+                Log.i("WIFI", "COLLISION WORKS");
+            });
+        });
+    */
     }
-
+    
     @Override
-    protected void onPause() {
-        BluetoothHandler.getInstance().dissconnect();
-        super.onPause();
+    protected void onStart() {
+        BluetoothHandler.getInstance().start();
+        super.onStart();
     }
-
+    
     @Override
-    protected void onResume() {
-//        BluetoothHandler.getInstance().connect();
-        super.onResume();
+    protected void onStop() {
+        BluetoothHandler.getInstance().stop();
+        super.onStop();
     }
-
+    
     @Override
-    protected void onDestroy() {
-        BluetoothHandler.getInstance().dissconnect();
-        super.onDestroy();
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         item.setChecked(true);
         item.setEnabled(true);
-
+    
         switch (item.getItemId()) {
             case R.id.navigation_steer:
                 this.openFragment(CommandFragment.newInstance(), "Command");
@@ -93,11 +91,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
         return false;
     }
-
-    private void openFragment(Fragment fragment, String toFragment) {
+    
+    private void openFragment(final Fragment fragment, final String toFragment) {
         if (this.currentScreen != toFragment) {
-            FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
-
+            final FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
+            
             if (toFragment == "Command") {
                 transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
             } else if (toFragment == "Visualization") {
@@ -109,15 +107,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     transaction.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
                 }
             }
-
+            
             this.currentScreen = toFragment;
-
+            
             transaction.replace(R.id.bottom_nav_container, fragment);
             transaction.addToBackStack(null);
             transaction.commit();
         }
     }
-
+    
     private static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
     private boolean checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -127,36 +125,36 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             return true;
         }
     }
-
+    
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, final String[] permissions, final int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_LOCATION: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     }
                     else{
-                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-                        builder.setMessage("Location Permission")
-                                .setTitle("Location Permission is Required For Application to Function, Please Accept.");
-                        AlertDialog dialog = builder.create();
-
-                        dialog.show();
-                        this.checkLocationPermission();
+                        this.alertDialog();
+                        
                     }
                 } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-                    builder.setMessage("Location Permission")
-                            .setTitle("Location Permission is Required For Application to Function, Please Accept.");
-                    AlertDialog dialog = builder.create();
-
-                    dialog.show();
-                    this.checkLocationPermission();
+                    this.alertDialog();
                 }
                 return;
             }
         }
     }
+    
+    private void alertDialog(){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    
+        builder.setTitle("Location Permission")
+                .setMessage("Location Permission is Required To Connect to the Mbot")
+                .setPositiveButton("OK", null);
+                
+        final AlertDialog dialog = builder.create();
+    
+        dialog.show();
+    }
 }
+
