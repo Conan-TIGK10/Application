@@ -35,7 +35,7 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
     
     private MainActivity mainActivity;
     
-    private final BluetoothAdapter bluetoothAdapter;
+    private BluetoothAdapter bluetoothAdapter;
     private BluetoothDevice bluetoothDevice;
     
     private final ArrayList<BluetoothCallback> bluetoothCallback;
@@ -65,7 +65,7 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
     }
     
     public void connect(){
-        if (this.bluetoothState != BluetoothInState.BLUETOOTHDISABLED){
+        if (this.bluetoothAdapter != null && this.bluetoothState != BluetoothInState.BLUETOOTHDISABLED ){
             this.bluetoothAdapter.cancelDiscovery();
             this.bluetoothDevice = Neatle.getDevice(this.MAC_ADDRESS);
             this.subscription = Neatle.createSubscription(this.mainActivity, this.bluetoothDevice, this.SERVICE_UUID, this.READ_UUID);
@@ -113,6 +113,7 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
     }
     
     private void printBluetoothDevices() {
+        if (this.bluetoothAdapter != null){return;}
         if (this.bluetoothAdapter.isEnabled()) {
             final Set<BluetoothDevice> devices = this.bluetoothAdapter.getBondedDevices();
             if (devices != null) {
@@ -141,7 +142,8 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
         //discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 20);
         //this.mainActivity.startActivity(discoverableIntent);
         
-        if (this.bluetoothState != BluetoothInState.CONNECTED){
+        this.checkConnection();
+        if (this.bluetoothAdapter != null && this.bluetoothState != BluetoothInState.CONNECTED ){
             this.bluetoothAdapter.startDiscovery();
             this.updateState(BluetoothInState.SEARCHING);
         }
@@ -162,8 +164,13 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
     }
     
     public void checkConnection(){
-        if (this.bluetoothAdapter == null || !this.bluetoothAdapter.isEnabled()){
+        this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (this.bluetoothAdapter == null){
             this.updateState(BluetoothInState.BLUETOOTHDISABLED);
+        }else if(!this.bluetoothAdapter.isEnabled()){
+            this.updateState(BluetoothInState.BLUETOOTHDISABLED);
+        }else{
+            this.updateState(BluetoothInState.DISCONNECTED);
         }
     }
     

@@ -15,14 +15,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import si.inova.neatle.operation.CharacteristicSubscription;
-
-
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     
     private BottomNavigationView bottomNavigation;
     private String currentScreen;
-    private CharacteristicSubscription subscription;
     
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -135,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     }
                     else{
                         this.alertDialog();
-                        
                     }
                 } else {
                     this.alertDialog();

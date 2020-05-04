@@ -1,5 +1,7 @@
 package com.hero.elias.conanapp;
 
+import androidx.annotation.NonNull;
+
 public class Vector2D {
     public double x;
     public double y;
@@ -7,6 +9,15 @@ public class Vector2D {
     public Vector2D(double x, double y) {
         this.x = x;
         this.y = y;
+    }
+    
+    public Vector2D(Vector2D v) {
+        this.x = v.x;
+        this.y = v.y;
+    }
+    
+    protected Vector2D clone() {
+        return new Vector2D(this);
     }
     
     public static double vectorToDegree(Vector2D v) {
@@ -40,4 +51,24 @@ public class Vector2D {
         return (float) ((a.x * b.x ) + (a.y * b.y));
     }
     
+    public void add(Vector2D v) {
+        this.x += v.x;
+        this.y += v.y;
+    }
+    
+    
+    public void subtract(Vector2D v) {
+        this.x -= v.x;
+        this.y -= v.y;
+    }
+    
+    public void multiply(Vector2D v) {
+        this.x *= v.x;
+        this.y *= v.y;
+    }
+    
+    public void divide(Vector2D v) {
+        this.x /= v.x;
+        this.y /= v.y;
+    }
 }
