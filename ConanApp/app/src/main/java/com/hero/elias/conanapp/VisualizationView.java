@@ -114,6 +114,8 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
     
         this.gridPaint = new Paint();
         this.gridPaint.setARGB(255, 64, 64, 64);
+        
+        // Doesnt Work
         this.gridSpacing = 8.0;
         this.gridMultiplier = this.gridSpacing * 2.0;
         this.gridDivider = this.gridMultiplier / 2.0;
@@ -121,7 +123,7 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
         this.path = new Path();
         this.pathList = new ArrayList<Vector2D>();
         this.pathCornerEffectPhaseCounter = 0.0;
-        this.pathCornerEffect = new CornerPathEffect(100);
+        this.pathCornerEffect = new CornerPathEffect(200);
         
         this.collisionBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.icons8_explosion_64px, bitmapOptions);
         this.collisionMatrix = new Matrix();
