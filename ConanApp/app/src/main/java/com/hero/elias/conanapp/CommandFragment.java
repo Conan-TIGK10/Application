@@ -30,7 +30,8 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
     ImageView image_joystick, image_border;
     TextView textView_x, textView_y, textView_angle, textView_distance, textView_direction;
     String message;
-    int manualOrAutomatic = 1;
+    int manualOrAutomatic = 0;
+    Button togglebtn;
     
     public CommandFragment() {
         BluetoothHandler.getInstance().addCallback(this);
@@ -73,6 +74,7 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
         textView_angle = view.findViewById(R.id.angle);
         textView_distance = view.findViewById(R.id.distance);
         textView_direction = view.findViewById(R.id.direction);
+        togglebtn = view.findViewById(R.id.toggle_btn);
         
         layout_joystick = view.findViewById(R.id.JoystickBackground);
         
@@ -138,6 +140,20 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
                     textView_direction.setText("Direction :");
                 }
                 return true;
+            }
+        });
+
+        togglebtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(togglebtn.getText() == "AUTOMATIC"){
+                    togglebtn.setText("MANUAL");
+                    manualOrAutomatic = 1;
+                }
+                else{
+                    togglebtn.setText("AUTOMATIC");
+                    manualOrAutomatic = 0;
+                }
             }
         });
     }
