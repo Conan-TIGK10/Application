@@ -30,7 +30,7 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
     ImageView image_joystick, image_border;
     TextView textView_x, textView_y, textView_angle, textView_distance, textView_direction;
     String message;
-    int manualOrAutomatic = 0;
+    int manualOrAutomatic = 1;
     
     public CommandFragment() {
         BluetoothHandler.getInstance().addCallback(this);
@@ -86,7 +86,7 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
         joystick.setOffset(90);
         joystick.setMinimumDistance(50);
         
-        
+
         layout_joystick.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View arg0, MotionEvent arg1) {
                 
