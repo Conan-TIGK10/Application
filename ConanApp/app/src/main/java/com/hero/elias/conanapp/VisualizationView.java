@@ -31,12 +31,12 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
     private double secondsCounter;
     
     private double deltaTimeSeconds;
-    private int deltaTimeMillis;
+    private long deltaTimeMillis;
     private long lastSystemTime;
     
-    private int millisCurrent;
-    private int millisStart;
-    private int millisDestination;
+    private long millisCurrent;
+    private long millisStart;
+    private long millisDestination;
     
     private Vector2D robotPositionCurrent;
     private Vector2D robotPositionStart;
@@ -58,7 +58,7 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
     private Paint lidarPaint;
     private float lidarStrength;
     private float lidarDestinationStrength;
-    private int lidarMillisTimestamp;
+    private long lidarMillisTimestamp;
     
     private Bitmap collisionBitmap;
     private Matrix collisionMatrix;
@@ -100,7 +100,7 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
         this.lidarPaint.setStrokeWidth(32f);
         this.lidarStrength = 0f;
         this.lidarDestinationStrength = 0f;
-        this.lidarMillisTimestamp = -5001;
+        this.lidarMillisTimestamp = -1501;
         
         this.pathPaint = new Paint();
         this.pathPaint.setStrokeWidth(8f);
@@ -115,7 +115,7 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
         this.gridPaint = new Paint();
         this.gridPaint.setARGB(255, 64, 64, 64);
         
-        // Doesnt Work
+        // Do not touch this
         this.gridSpacing = 8.0;
         this.gridMultiplier = this.gridSpacing * 2.0;
         this.gridDivider = this.gridMultiplier / 2.0;
@@ -150,22 +150,17 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
     }
     
     @Override
-    public void onNewData(Vector2D position, Vector2D heading, int millis, float lidar, boolean gap) {
+    public void onNewData(Vector2D position, Vector2D heading, long millis, int lidar, boolean gap) {
         this.lidarDestinationStrength = lidar;
         
-        if (lidar < 0.1f && ((millis - this.lidarMillisTimestamp) > 5000)){
+        if (((lidar < 10f) || gap) && ((millis - this.lidarMillisTimestamp) > 1500)){
             synchronized (this.collisionList) {
             this.collisionList.add(new Vector2D(this.windowCenter.x + (position.x * this.gridDivider), this.windowCenter.y - (position.y * this.gridDivider)));
             if (this.collisionList.size() == 32) {
                 this.collisionList.remove(0);
             }
             }
-    
             this.lidarMillisTimestamp = millis;
-        }
-        
-        if (gap){
-        
         }
     }
     

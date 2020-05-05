@@ -11,6 +11,8 @@ import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -62,10 +64,12 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
         if (this.bluetoothState != BluetoothInState.BLUETOOTHDISABLED){
             this.discoverDevices();
         }
+        this.connect();
     }
     
     public void connect(){
-        if (this.bluetoothAdapter != null && this.bluetoothState != BluetoothInState.BLUETOOTHDISABLED ){
+        if (this.bluetoothAdapter != null && this.bluetoothState != BluetoothInState.BLUETOOTHDISABLED && this.bluetoothState != BluetoothInState.CONNECTED && this.bluetoothState != BluetoothInState.CONNECTING){
+            this.updateState(BluetoothInState.CONNECTING);
             this.bluetoothAdapter.cancelDiscovery();
             this.bluetoothDevice = Neatle.getDevice(this.MAC_ADDRESS);
             this.subscription = Neatle.createSubscription(this.mainActivity, this.bluetoothDevice, this.SERVICE_UUID, this.READ_UUID);
@@ -89,12 +93,20 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
             }
             
             this.updateMessage(change.getValue());
+            //Log.i("BT", new String(change.getValue()));
         } else {
             this.updateState(BluetoothInState.DISCONNECTED);
         }
     }
     
     public void write(final byte[] bytes) {
+    
+        try {
+            Log.i("BT", new String(bytes, "US-ASCII"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    
         if (this.bluetoothState == BluetoothInState.CONNECTED){
             final ByteArrayInputSource inputSource = new ByteArrayInputSource(bytes);
             final Operation writeOperation = Neatle.createOperationBuilder(this.mainActivity)
@@ -142,7 +154,6 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
         //discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 20);
         //this.mainActivity.startActivity(discoverableIntent);
         
-        this.checkConnection();
         if (this.bluetoothAdapter != null && this.bluetoothState != BluetoothInState.CONNECTED ){
             this.bluetoothAdapter.startDiscovery();
             this.updateState(BluetoothInState.SEARCHING);
@@ -223,7 +234,6 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
     
                 if (this.bluetoothDevice.getAddress().equals(device.getAddress())) {
                     if (this.bluetoothState != BluetoothInState.CONNECTED){
-                        this.updateState(BluetoothInState.CONNECTING);
                         this.connect();
                     }
                 }

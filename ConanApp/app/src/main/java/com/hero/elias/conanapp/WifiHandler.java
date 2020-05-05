@@ -78,7 +78,7 @@ public class WifiHandler extends BroadcastReceiver {
         if (!this.sessionSet){ return; }
         
         final Date now = new Date();
-        final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMANY);
+        final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.GERMANY);
         final String date = dateFormat.format(now);
         
         final JSONObject jsonParam = new JSONObject();

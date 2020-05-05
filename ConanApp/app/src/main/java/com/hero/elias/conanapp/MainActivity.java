@@ -15,6 +15,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     
     private BottomNavigationView bottomNavigation;
@@ -31,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         BluetoothHandler.getInstance().checkConnection();
         WifiHandler.getInstance().checkConnection();
     
-        MbotHandler.getInstance().startThread();
+        MbotHandler.getInstance();
     
         this.bottomNavigation = this.findViewById(R.id.bottom_navigation);
         this.bottomNavigation.setItemIconTintList(null);
