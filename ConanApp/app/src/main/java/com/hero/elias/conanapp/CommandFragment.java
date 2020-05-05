@@ -1,5 +1,6 @@
 package com.hero.elias.conanapp;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -34,7 +35,6 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
     Button togglebtn;
     
     public CommandFragment() {
-        BluetoothHandler.getInstance().addCallback(this);
     }
     
     public static CommandFragment newInstance() {
@@ -61,9 +61,11 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
         return inflater.inflate(R.layout.fragment_command, container, false);
     }
     
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        
+        BluetoothHandler.getInstance().addCallback(this);
+    
         this.receiveTextView = view.findViewById(R.id.receive_text);
         super.onViewCreated(view, savedInstanceState);
         
@@ -95,8 +97,7 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
                 // send information to bluetooth
                 
                 joystick.drawStick(arg1);
-                if(arg1.getAction() == MotionEvent.ACTION_DOWN
-                        || arg1.getAction() == MotionEvent.ACTION_MOVE) {
+                if(arg1.getAction() == MotionEvent.ACTION_DOWN) {
                     
                     System.out.println(message);
                    
@@ -161,15 +162,16 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
                     }
                         textView_direction.setText("Direction : Center");
                     }
-                } else if(arg1.getAction() == MotionEvent.ACTION_UP) {
+                }
+                if(arg1.getAction() == MotionEvent.ACTION_UP) {
                     textView_x.setText("X :");
                     textView_y.setText("Y :");
                     textView_angle.setText("Angle :");
                     textView_distance.setText("Distance :");
                     textView_direction.setText("Direction :");
-                       message = "/" + manualOrAutomatic + "," + 0 + "," + 0 + "&";
-                         try {
-                        BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
+                    message = "/" + manualOrAutomatic + "," + 0 + "," + 0 + "&";
+                     try {
+                    BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
@@ -189,6 +191,13 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
                     togglebtn.setText("AUTOMATIC");
                     manualOrAutomatic = 0;
                 }
+    
+                message = "/" + manualOrAutomatic + "," + 0 + "," + 0 + "&";
+                try {
+                    BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -196,6 +205,12 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
     @Override
     public void onDestroy() {
         BluetoothHandler.getInstance().removeCallback(this);
+        message = "/" + 0 + "," + 0 + "," + 0 + "&";
+        try {
+            BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         super.onDestroy();
     }
 }
