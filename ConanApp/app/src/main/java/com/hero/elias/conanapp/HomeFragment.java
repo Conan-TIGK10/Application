@@ -5,10 +5,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import eo.view.bluetoothstate.BluetoothState;
@@ -17,6 +19,7 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
     
     private BluetoothState bluetoothState;
     private TextView bluetoothStateText;
+    private Button createSession;
     
     public HomeFragment() {
         BluetoothHandler.getInstance().addCallback(this);
@@ -39,6 +42,18 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
     
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+        this.createSession = view.findViewById(R.id.createSession);
+        this.createSession.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment sessionFragment = new SessionFragment();
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.bottom_nav_container, sessionFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
+
         this.bluetoothState = view.findViewById(R.id.bluetooth_state);
         
         this.bluetoothStateText = view.findViewById(R.id.bluetooth_state_text);
@@ -73,6 +88,9 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
             case CONNECTED:
                 this.bluetoothState.setState(BluetoothState.State.CONNECTED);
                 this.bluetoothStateText.setText("Connected !");
+                if (WifiHandler.getInstance().getState().equals(WifiHandler.WifiInState.CONNECTED)){
+                    createSession.setVisibility(View.VISIBLE);
+                }
                 break;
             case SEARCHING:
                 this.bluetoothState.setState(BluetoothState.State.SEARCHING);
@@ -91,6 +109,11 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
     
     @Override
     public void onStateChange(WifiHandler.WifiInState state) {
+        if (state.equals(WifiHandler.WifiInState.CONNECTED) && bluetoothState.getState().equals(BluetoothState.State.CONNECTED)) {
+            createSession.setVisibility(View.VISIBLE);
+        } else {
+            createSession.setVisibility(View.INVISIBLE);
+        }
     }
     
 }
