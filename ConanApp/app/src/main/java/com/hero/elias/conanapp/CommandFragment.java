@@ -28,11 +28,11 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
     Bitmap ball;
     JoyStickClass joystick;
     RelativeLayout layout_joystick;
-    ImageView image_joystick, image_border;
-    TextView textView_x, textView_y, textView_angle, textView_distance, textView_direction;
     String message;
-    int manualOrAutomatic = 0;
-    Button togglebtn;
+    int manualOrAutomatic ;
+    private Button toggle_button;
+    int currentDirection = -1;
+    int newDirection = -1;
     
     public CommandFragment() {
     }
@@ -70,13 +70,8 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
         super.onViewCreated(view, savedInstanceState);
         
         ball = BitmapFactory.decodeResource(getResources(), R.drawable.purple_ball);
-        
-        textView_x = view.findViewById(R.id.x_value);
-        textView_y = view.findViewById(R.id.y_value);
-        textView_angle = view.findViewById(R.id.angle);
-        textView_distance = view.findViewById(R.id.distance);
-        textView_direction = view.findViewById(R.id.direction);
-        togglebtn = view.findViewById(R.id.toggle_btn);
+        toggle_button = view.findViewById(R.id.toggle_btn);
+        manualOrAutomatic = 0;
         
         layout_joystick = view.findViewById(R.id.JoystickBackground);
         
@@ -91,114 +86,57 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
         joystick.setMinimumDistance(50);
         
 
-        layout_joystick.setOnTouchListener(new View.OnTouchListener() {
-            public boolean onTouch(View arg0, MotionEvent arg1) {
-                
-                // send information to bluetooth
-                
-                joystick.drawStick(arg1);
-                if(arg1.getAction() == MotionEvent.ACTION_DOWN) {
-                    
-                    System.out.println(message);
-                   
-                    textView_x.setText("X : " + joystick.getX());
-                    textView_y.setText("Y : " + joystick.getY());
-                    textView_angle.setText("Angle : " + joystick.getAngle());
-                    textView_distance.setText("Distance : " + joystick.getDistance());
-                    
-                    int direction = joystick.get8Direction();
-                    if(direction == JoyStickClass.STICK_UP) {
-                        textView_direction.setText("Direction : Up");
-                        
-                         message = "/" + manualOrAutomatic + "," + 0 + "," + 1 + "&";
-                         try {
-                        BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
+        layout_joystick.setOnTouchListener((arg0, arg1) -> {
+
+            joystick.drawStick(arg1);
+            if(arg1.getAction() == MotionEvent.ACTION_DOWN
+            || arg1.getAction() == MotionEvent.ACTION_MOVE) {
+
+                int direction = joystick.get8Direction();
+                newDirection = direction;
+                if(newDirection != currentDirection & direction != 1337){
+                    switch (direction)
+                    {
+                        case JoyStickClass.STICK_UP:
+                            message = "/" + manualOrAutomatic + "," + 0 + "," + 1 + "&";
+                            break;
+                        case JoyStickClass.STICK_RIGHT:
+                            message = "/" + manualOrAutomatic + "," + 2 + "," + 0 + "&";
+                            break;
+                        case JoyStickClass.STICK_DOWN:
+                            message = "/" + manualOrAutomatic + "," + 0 + "," + 2 + "&";
+                            break;
+                        case JoyStickClass.STICK_LEFT:
+                            message = "/" + manualOrAutomatic + "," + 1 + "," + 0 + "&";
+                            break;
+                        case JoyStickClass.STICK_NONE:
+                            message = "/" + manualOrAutomatic + "," + 0 + "," + 0 + "&";
+                            break;
                     }
-                        
-                    } else if(direction == JoyStickClass.STICK_UPRIGHT) {
-                        textView_direction.setText("Direction : Up Right");
-                        
-      
-                    } else if(direction == JoyStickClass.STICK_RIGHT) {
-                        textView_direction.setText("Direction : Right");
-                        
-                           message = "/" + manualOrAutomatic + "," + 2 + "," + 0 + "&";
-                         try {
-                        BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                        
-                    } else if(direction == JoyStickClass.STICK_DOWNRIGHT) {
-                        textView_direction.setText("Direction : Down Right");
-                    } else if(direction == JoyStickClass.STICK_DOWN) {
-                        textView_direction.setText("Direction : Down");
-                           message = "/" + manualOrAutomatic + "," + 0 + "," + 2 + "&";
-                         try {
-                        BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    } else if(direction == JoyStickClass.STICK_DOWNLEFT) {
-                        textView_direction.setText("Direction : Down Left");
-                    } else if(direction == JoyStickClass.STICK_LEFT) {
-                        textView_direction.setText("Direction : Left");
-                           message = "/" + manualOrAutomatic + "," + 1 + "," + 0 + "&";
-                         try {
-                        BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    } else if(direction == JoyStickClass.STICK_UPLEFT) {
-                        textView_direction.setText("Direction : Up Left");
-                    } else if(direction == JoyStickClass.STICK_NONE) {
-                           message = "/" + manualOrAutomatic + "," + 0 + "," + 0 + "&";
-                         try {
-                        BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                        textView_direction.setText("Direction : Center");
-                    }
+                    sendToRobot(message);
+                    currentDirection = direction;
                 }
-                if(arg1.getAction() == MotionEvent.ACTION_UP) {
-                    textView_x.setText("X :");
-                    textView_y.setText("Y :");
-                    textView_angle.setText("Angle :");
-                    textView_distance.setText("Distance :");
-                    textView_direction.setText("Direction :");
-                    message = "/" + manualOrAutomatic + "," + 0 + "," + 0 + "&";
-                     try {
-                    BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                }
-                return true;
             }
+
+            if(arg1.getAction() == MotionEvent.ACTION_UP) {
+                message = "/" + manualOrAutomatic + "," + 0 + "," + 0 + "&";
+                sendToRobot(message);
+                currentDirection = -1;
+                newDirection = -1;
+            }
+            return true;
         });
 
-        togglebtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(togglebtn.getText() == "AUTOMATIC"){
-                    togglebtn.setText("MANUAL");
-                    manualOrAutomatic = 1;
-                }
-                else{
-                    togglebtn.setText("AUTOMATIC");
-                    manualOrAutomatic = 0;
-                }
-    
-                message = "/" + manualOrAutomatic + "," + 0 + "," + 0 + "&";
-                try {
-                    BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+        toggle_button.setOnClickListener(view1 -> {
+            if (toggle_button.getText().equals("AUTOMATIC")) {
+                toggle_button.setText("MANUAL");
+                manualOrAutomatic = 1;
+            } else {
+                toggle_button.setText("AUTOMATIC");
+                manualOrAutomatic = 0;
             }
+            message = "/" + manualOrAutomatic + "," + 0 + "," + 0 + "&";
+            sendToRobot(message);
         });
     }
     
@@ -206,11 +144,15 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
     public void onDestroy() {
         BluetoothHandler.getInstance().removeCallback(this);
         message = "/" + 0 + "," + 0 + "," + 0 + "&";
+        sendToRobot(message);
+        super.onDestroy();
+    }
+
+    private void sendToRobot(String message){
         try {
             BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        super.onDestroy();
     }
 }
