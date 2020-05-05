@@ -98,15 +98,8 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
                 if(arg1.getAction() == MotionEvent.ACTION_DOWN
                         || arg1.getAction() == MotionEvent.ACTION_MOVE) {
                     
-                    message = "/" + manualOrAutomatic + "," + joystick.getX() + "," + joystick.getY() + "&";
                     System.out.println(message);
-                    
-                    try {
-                        BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    
+                   
                     textView_x.setText("X : " + joystick.getX());
                     textView_y.setText("Y : " + joystick.getY());
                     textView_angle.setText("Angle : " + joystick.getAngle());
@@ -115,21 +108,57 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
                     int direction = joystick.get8Direction();
                     if(direction == JoyStickClass.STICK_UP) {
                         textView_direction.setText("Direction : Up");
+                        
+                         message = "/" + manualOrAutomatic + "," + 0 + "," + 1 + "&";
+                         try {
+                        BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                        
                     } else if(direction == JoyStickClass.STICK_UPRIGHT) {
                         textView_direction.setText("Direction : Up Right");
+                        
+      
                     } else if(direction == JoyStickClass.STICK_RIGHT) {
                         textView_direction.setText("Direction : Right");
+                        
+                           message = "/" + manualOrAutomatic + "," + 2 + "," + 0 + "&";
+                         try {
+                        BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                        
                     } else if(direction == JoyStickClass.STICK_DOWNRIGHT) {
                         textView_direction.setText("Direction : Down Right");
                     } else if(direction == JoyStickClass.STICK_DOWN) {
                         textView_direction.setText("Direction : Down");
+                           message = "/" + manualOrAutomatic + "," + 0 + "," + 2 + "&";
+                         try {
+                        BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                     } else if(direction == JoyStickClass.STICK_DOWNLEFT) {
                         textView_direction.setText("Direction : Down Left");
                     } else if(direction == JoyStickClass.STICK_LEFT) {
                         textView_direction.setText("Direction : Left");
+                           message = "/" + manualOrAutomatic + "," + 1 + "," + 0 + "&";
+                         try {
+                        BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                     } else if(direction == JoyStickClass.STICK_UPLEFT) {
                         textView_direction.setText("Direction : Up Left");
                     } else if(direction == JoyStickClass.STICK_NONE) {
+                           message = "/" + manualOrAutomatic + "," + 0 + "," + 0 + "&";
+                         try {
+                        BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                         textView_direction.setText("Direction : Center");
                     }
                 } else if(arg1.getAction() == MotionEvent.ACTION_UP) {
@@ -138,6 +167,12 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
                     textView_angle.setText("Angle :");
                     textView_distance.setText("Distance :");
                     textView_direction.setText("Direction :");
+                       message = "/" + manualOrAutomatic + "," + 0 + "," + 0 + "&";
+                         try {
+                        BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                 }
                 return true;
             }
