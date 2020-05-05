@@ -26,6 +26,20 @@ public class Tweening {
         return (Math.sin((increment + phase) * frequency) * (maxAmp - minAmp)) + minAmp;
     }
     
+    public static double getRandomNumber(double min, double max) {
+        return min + Math.random() * (max - min);
+    }
+    public static float getRandomNumber(float min, float max) {
+        return (float) (min + Math.random() * (max - min));
+    }
+    public static int getRandomNumber(int min, int max) {
+        return (int) (min + Math.random() * (max - min));
+    }
+    
+    public static float clamp(float val, float min, float max) {
+        return Math.max(min, Math.min(max, val));
+    }
+    
     // Scalar can scale infinitly, the higher the slower to reach
     public static double smoothToTarget(double current, double target, double scalar) {
         current += (target - current) / scalar;
