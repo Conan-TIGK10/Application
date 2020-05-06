@@ -100,7 +100,6 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
     }
     
     public void write(final byte[] bytes) {
-    
         try {
             Log.i("BT", new String(bytes, "US-ASCII"));
         } catch (UnsupportedEncodingException e) {

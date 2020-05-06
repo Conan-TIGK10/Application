@@ -56,7 +56,6 @@ public class Vector2D {
         this.y += v.y;
     }
     
-    
     public void subtract(Vector2D v) {
         this.x -= v.x;
         this.y -= v.y;

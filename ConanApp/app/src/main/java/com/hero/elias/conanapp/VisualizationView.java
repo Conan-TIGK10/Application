@@ -12,7 +12,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Choreographer;
 import android.view.View;
 
@@ -23,15 +22,16 @@ import java.util.List;
 
 public class VisualizationView extends View implements Choreographer.FrameCallback, MbotHandler.MbotCallback {
     
-    private int windowWidth;
-    private int windowHeight;
+    private Vector2D windowSize;
     private Vector2D windowCenter;
     
     private int frameCounter;
+    private long millisCounter;
     private double secondsCounter;
     
-    private double deltaTimeSeconds;
     private long deltaTimeMillis;
+    private double deltaTimeSeconds;
+    
     private long lastSystemTime;
     
     private long millisCurrent;
@@ -56,9 +56,9 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
     private double pathCornerEffectPhaseCounter;
     
     private Paint lidarPaint;
-    private float lidarStrength;
-    private float lidarDestinationStrength;
-    private long lidarMillisTimestamp;
+    private double lidarStrength;
+    private double lidarDestinationStrength;
+    private long lidarMillisLast;
     
     private Bitmap collisionBitmap;
     private Matrix collisionMatrix;
@@ -86,6 +86,7 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
     }
     
     private void init(Context context, AttributeSet attrs, int defStyle) {
+        this.windowSize = new Vector2D(0.0, 0.0);
         this.windowCenter = new Vector2D(0.0, 0.0);
         this.updateWindow();
         
@@ -98,9 +99,9 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
         this.lidarPaint = new Paint();
         this.lidarPaint.setMaskFilter(new BlurMaskFilter(64f, BlurMaskFilter.Blur.NORMAL));
         this.lidarPaint.setStrokeWidth(32f);
-        this.lidarStrength = 0f;
-        this.lidarDestinationStrength = 0f;
-        this.lidarMillisTimestamp = -1501;
+        this.lidarStrength = 0.0;
+        this.lidarDestinationStrength = 0.0;
+        this.lidarMillisLast = 0;
         
         this.pathPaint = new Paint();
         this.pathPaint.setStrokeWidth(8f);
@@ -115,7 +116,6 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
         this.gridPaint = new Paint();
         this.gridPaint.setARGB(255, 64, 64, 64);
         
-        // Do not touch this
         this.gridSpacing = 8.0;
         this.gridMultiplier = this.gridSpacing * 2.0;
         this.gridDivider = this.gridMultiplier / 2.0;
@@ -150,48 +150,61 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
     }
     
     @Override
-    public void onNewData(Vector2D position, Vector2D heading, long millis, int lidar, boolean gap) {
+    public void onNewData(Vector2D position, Vector2D heading, long millis, int lidar, int gap) {
         this.lidarDestinationStrength = lidar;
         
-        if (((lidar < 10f) || gap) && ((millis - this.lidarMillisTimestamp) > 1500)){
+        if ((lidar < 10f) && ((millis - this.lidarMillisLast) > 1500)){
             synchronized (this.collisionList) {
-            this.collisionList.add(new Vector2D(this.windowCenter.x + (position.x * this.gridDivider), this.windowCenter.y - (position.y * this.gridDivider)));
+            this.collisionList.add(new Vector2D(
+                    this.windowCenter.x + (position.x * this.gridDivider),
+                    this.windowCenter.y - (position.y * this.gridDivider)));
+            
             if (this.collisionList.size() == 32) {
                 this.collisionList.remove(0);
             }
             }
-            this.lidarMillisTimestamp = millis;
+            
+            this.lidarMillisLast = millis;
         }
     }
     
     private void updateWindow(){
-        this.windowWidth = this.getWidth() - this.getPaddingLeft() - this.getPaddingRight();
-        this.windowHeight = this.getHeight() - this.getPaddingTop() - this.getPaddingBottom();
-        this.windowCenter.x = this.windowWidth / 2f;
-        this.windowCenter.y = this.windowHeight / 2f;
+        this.windowSize.x = this.getWidth() - this.getPaddingLeft() - this.getPaddingRight();
+        this.windowSize.y = this.getHeight() - this.getPaddingTop() - this.getPaddingBottom();
+        
+        this.windowCenter.x = this.windowSize.x / 2.0;
+        this.windowCenter.y = this.windowSize.y / 2.0;
     }
     
     private void updateTime(){
-        this.frameCounter++;
-        
         long systemTime = System.currentTimeMillis();
+
         this.deltaTimeMillis = (int) (systemTime - this.lastSystemTime);
-        this.deltaTimeSeconds =  (double)this.deltaTimeMillis / 1000.0;
-        
-        this.lastSystemTime = systemTime;
-        
+        this.deltaTimeSeconds =  (double) this.deltaTimeMillis / 1000.0;
+    
+        this.frameCounter++;
+        this.millisCounter += this.deltaTimeMillis;
         this.secondsCounter += this.deltaTimeSeconds;
+    
+        this.lastSystemTime = systemTime;
     }
     
     private void updatePath(Canvas canvas){
         if (this.pathList.isEmpty()){
-            this.pathList.add(new Vector2D(this.windowCenter.x + (this.robotPositionCurrent.x * this.gridDivider), this.windowCenter.y - (this.robotPositionCurrent.y * this.gridDivider)));
+            this.pathList.add(new Vector2D(
+                    this.windowCenter.x + (this.robotPositionCurrent.x * this.gridDivider),
+                    this.windowCenter.y - (this.robotPositionCurrent.y * this.gridDivider)));
         }
         
         this.path.reset();
-        this.path.moveTo((float)(this.pathList.get(0).x - (this.robotPositionCurrent.x * this.gridDivider)), (float)(this.pathList.get(0).y + (this.robotPositionCurrent.y * this.gridDivider)));
+        this.path.moveTo(
+                (float)(this.pathList.get(0).x - (this.robotPositionCurrent.x * this.gridDivider)),
+                (float)(this.pathList.get(0).y + (this.robotPositionCurrent.y * this.gridDivider)));
+        
         for (int i = 1; i < this.pathList.size(); i++) {
-            this.path.lineTo((float)(this.pathList.get(i).x - (this.robotPositionCurrent.x * this.gridDivider)), (float)(this.pathList.get(i).y + (this.robotPositionCurrent.y * this.gridDivider)));
+            this.path.lineTo(
+                    (float)(this.pathList.get(i).x - (this.robotPositionCurrent.x * this.gridDivider)),
+                    (float)(this.pathList.get(i).y + (this.robotPositionCurrent.y * this.gridDivider)));
         }
         this.path.lineTo((float)this.windowCenter.x, (float)this.windowCenter.y);
         
@@ -218,7 +231,10 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
                 this.robotHeadingStart = this.robotHeadingCurrent.clone();
                 this.robotHeadingDestination = MbotHandler.getInstance().getHeading().clone();
         
-                this.pathList.add(new Vector2D(this.windowCenter.x + (this.robotPositionCurrent.x * this.gridDivider), this.windowCenter.y - (this.robotPositionCurrent.y * this.gridDivider)));
+                this.pathList.add(new Vector2D(
+                        this.windowCenter.x + (this.robotPositionCurrent.x * this.gridDivider),
+                        this.windowCenter.y - (this.robotPositionCurrent.y * this.gridDivider)));
+                
                 if (this.pathList.size() == 64) {
                     this.pathList.remove(0);
                 }
@@ -246,7 +262,7 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
         
         for (int i = 0; i < (this.gridSpacing + 1); i++) {
             for (int j = 0; j < (this.gridSpacing * 2); j++) {
-                Vector2D circle = new Vector2D((i * (this.windowWidth / this.gridSpacing) + ((this.windowWidth / this.gridSpacing) * scaleX)), (j * (this.windowWidth / this.gridSpacing) + ((this.windowWidth / this.gridSpacing) * scaleY)));
+                Vector2D circle = new Vector2D((i * (this.windowSize.x / this.gridSpacing) + ((this.windowSize.x / this.gridSpacing) * scaleX)), (j * (this.windowSize.x / this.gridSpacing) + ((this.windowSize.x / this.gridSpacing) * scaleY)));
                 double length = Vector2D.lengthBetweenVectors(circle, this.windowCenter);
                 this.gridPaint.setAlpha((int) Tweening.cosine(MathUtils.clamp(length, 0.0, 750.0), 0.0, 750.0, 127.0, 0.0));
                 
@@ -255,20 +271,41 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
         }
     }
     
+    private void updateCollision(Canvas canvas) {
+        // Animated bounce animation scaling, to make scaling work properly yScale needs to be stretched 180 degrees out of phase in time
+        float xScale = (float) Tweening.sine(0.90, 1, 4, 0, this.secondsCounter);
+        float yScale = (float) Tweening.sine(0.90, 1, 4, Math.PI / 2.0, this.secondsCounter);
+    
+        synchronized (this.collisionList) { // lock access to list to avoid threading
+            for (int i = 0; i < this.collisionList.size(); i++) {
+                this.collisionMatrix.setTranslate(
+                        (float) (this.collisionList.get(i).x - (this.robotPositionCurrent.x * this.gridDivider)) - (this.collisionBitmap.getWidth() / 2f),
+                        (float) (this.collisionList.get(i).y + (this.robotPositionCurrent.y * this.gridDivider)) - (this.collisionBitmap.getHeight() / 2f));
+                
+                this.collisionMatrix.preScale(
+                        xScale, yScale, this.collisionBitmap.getWidth() / 2f,
+                        this.collisionBitmap.getHeight() / 2f);
+        
+                canvas.drawBitmap(this.collisionBitmap, this.collisionMatrix, null);
+            }
+        }
+    }
+    
     private void updateLidar(Canvas canvas){
-        int lidarCount = 6;
+        int rectangleCount = 6; // rectangles to draw, will be blurred
         
-        double fov = 256 + 128;
-        double viewDistance = 512;
-        double fovDecrease = fov / lidarCount;
-        double viewDistanceDecrease = viewDistance / (lidarCount * 1.5);
+        double fov = 256 + 128; // field of view
+        double viewDistance = 512; // viewdistance
+        double fovDecrease = fov / rectangleCount;
+        double viewDistanceDecrease = viewDistance / (rectangleCount * 1.5);
         
-        Vector2D robotHeadingNormal = Vector2D.normalDirection(this.robotHeadingCurrent);
+        Vector2D robotHeadingNormal = Vector2D.normalDirection(this.robotHeadingCurrent); // direction to draw lidar in
         
-        this.lidarStrength = (float) Tweening.smoothToTarget(this.lidarStrength, this.lidarDestinationStrength, 12f);
+        this.lidarStrength = (float) Tweening.smoothToTarget(this.lidarStrength, this.lidarDestinationStrength, 12f); // smooth the intensity over time
         
-        for (int i = 0; i < lidarCount; i++) {
-            this.lidarPaint.setARGB((int) (i * (255f / lidarCount)), 0, 0, (int) Tweening.clamp(this.lidarStrength * 255f, 0, 255));
+        for (int i = 0; i < rectangleCount; i++) {
+            // start farthest away, and draw closer, intensity gets stronger as we get closer
+            this.lidarPaint.setARGB((int) (i * (255f / rectangleCount)), 0, 0, (int) Tweening.clamp((float) (this.lidarStrength * 255.0), 0, 255));
             
             canvas.drawLine(
                     (float) (this.windowCenter.x + this.robotHeadingCurrent.x * viewDistance + robotHeadingNormal.x * -fov),
@@ -279,20 +316,6 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
             
             fov -= fovDecrease;
             viewDistance -= viewDistanceDecrease;
-        }
-    }
-    
-    private void updateCollision(Canvas canvas) {
-        float xScale = (float) Tweening.sine(0.90, 1, 4, 0, this.secondsCounter);
-        float yScale = (float) Tweening.sine(0.85, 1, 4, Math.PI / 2.0, this.secondsCounter);
-    
-        synchronized (this.collisionList) {
-            for (int i = 1; i < this.collisionList.size(); i++) {
-                this.collisionMatrix.setTranslate((float) (this.collisionList.get(i).x - (this.robotPositionCurrent.x * this.gridDivider)) - (this.collisionBitmap.getWidth() / 2f), (float) (this.collisionList.get(i).y + (this.robotPositionCurrent.y * this.gridDivider)) - (this.collisionBitmap.getHeight() / 2f));
-                this.collisionMatrix.preScale(xScale, yScale, this.collisionBitmap.getWidth() / 2f, this.collisionBitmap.getHeight() / 2f);
-        
-                canvas.drawBitmap(this.collisionBitmap, this.collisionMatrix, null);
-            }
         }
     }
     
@@ -313,6 +336,7 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
     @Override
     public void doFrame(long frameTimeNanos) {
         Choreographer.getInstance().postFrameCallback(this);
+        
         this.invalidate();
     }
 }
