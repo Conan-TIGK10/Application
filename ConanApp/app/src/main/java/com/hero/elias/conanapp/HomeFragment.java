@@ -1,14 +1,18 @@
 package com.hero.elias.conanapp;
 
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import eo.view.bluetoothstate.BluetoothState;
@@ -17,6 +21,7 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
     
     private BluetoothState bluetoothState;
     private TextView bluetoothStateText;
+    private Button createSession;
     
     public HomeFragment() {
         BluetoothHandler.getInstance().addCallback(this);
@@ -45,6 +50,18 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
         this.setState(BluetoothHandler.getInstance().getState());
     
         super.onViewCreated(view, savedInstanceState);
+
+        this.createSession = view.findViewById(R.id.createSession);
+        this.createSession.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment sessionFragment = new SessionFragment();
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.bottom_nav_container, sessionFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
     }
     
     @Override
@@ -76,6 +93,11 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
             case CONNECTED:
                 this.bluetoothState.setState(BluetoothState.State.CONNECTED);
                 this.bluetoothStateText.setText("Connected !");
+                if (WifiHandler.getInstance().getState().equals(WifiHandler.WifiInState.CONNECTED)){
+                    createSession.setVisibility(View.VISIBLE);
+                } else {
+                    WifiHandler.getInstance().checkConnection();
+                }
                 break;
             case SEARCHING:
                 this.bluetoothState.setState(BluetoothState.State.SEARCHING);
@@ -88,12 +110,23 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
             case DISCONNECTED:
                 this.bluetoothState.setState(BluetoothState.State.SEARCH);
                 this.bluetoothStateText.setText("Disconnected");
+                this.createSession.setVisibility(View.INVISIBLE);
                 break;
         }
     }
     
     @Override
     public void onStateChange(WifiHandler.WifiInState state) {
+        try {
+            if (state.equals(WifiHandler.WifiInState.CONNECTED)/*&& bluetoothState.equals(BluetoothState.State.CONNECTED)*/) {
+                this.createSession.setVisibility(View.VISIBLE);
+            } else {
+                this.createSession.setVisibility(View.INVISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
     
 }
