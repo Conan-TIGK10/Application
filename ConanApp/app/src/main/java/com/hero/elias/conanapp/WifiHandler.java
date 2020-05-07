@@ -91,7 +91,7 @@ public class WifiHandler extends BroadcastReceiver {
             e.printStackTrace();
         }
         
-        new AsyncHTTPPost("http://3.122.218.59/api/position", jsonParam, responseString -> {
+        new AsyncHTTPPost("http://3.122.218.59/api/position", jsonParam, (error, responseString) -> {
             try {
                 JSONObject jsonObject = new JSONObject(responseString);
                 postListener.onFinished(jsonObject.getInt("id"));
@@ -115,7 +115,7 @@ public class WifiHandler extends BroadcastReceiver {
                 e.printStackTrace();
             }
     
-            new AsyncHTTPPost("http://3.122.218.59/api/collision", jsonParam, responseString -> {
+            new AsyncHTTPPost("http://3.122.218.59/api/collision", jsonParam, (error, responseString) -> {
                 collisionListener.onFinished();
             }).execute();
         });
@@ -132,30 +132,40 @@ public class WifiHandler extends BroadcastReceiver {
         } catch (final JSONException e) {
             e.printStackTrace();
         }
-    
-        new AsyncHTTPPost("http://3.122.218.59/api/session", jsonParam, responseString -> {
-            try {
-                JSONObject jsonObject = new JSONObject(responseString);
-                this.sessionId = jsonObject.getInt("id");
-                this.sessionSet = true;
-                createListener.onFinished();
-            } catch (JSONException e) {
-                e.printStackTrace();
+        new AsyncHTTPPost("http://3.122.218.59/api/session", jsonParam, (noErrorsFound, responseString) -> {
+            if (noErrorsFound) {
+                try {
+                    JSONObject jsonObject = new JSONObject(responseString);
+                    this.sessionId = jsonObject.getInt("id");
+                    this.sessionSet = true;
+                    createListener.onFinished(false, "");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    JSONObject jsonObject = new JSONObject(responseString);
+                    createListener.onFinished(true, jsonObject.getString("error"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }).execute();
     }
     interface SessionCreateListener {
-        void onFinished();
+        void onFinished(boolean error, String message);
     }
     
     public void setMainActivity(final MainActivity mainActivity){
         this.mainActivity = mainActivity;
         this.registerReceivers();
     }
-    
+
     private void registerReceivers(){
         if (this.mainActivity != null) {
             this.mainActivity.registerReceiver(this, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
+            this.mainActivity.registerReceiver(this, new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
+            this.mainActivity.registerReceiver(this, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
         } else {
             Log.i("WIFI", "Main Activity Not Linked");
         }
@@ -177,6 +187,16 @@ public class WifiHandler extends BroadcastReceiver {
                 this.updateState(WifiInState.CONNECTED);
             } else {
                 this.updateState(WifiInState.DISCONNECTED);
+            }
+        } else if (action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION)){
+            int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, 0);
+            switch (state) {
+                case WifiManager.WIFI_STATE_ENABLED:
+                    this.updateState(WifiInState.CONNECTED);
+                    break;
+                case WifiManager.WIFI_STATE_DISABLED:
+                    this.updateState(WifiInState.DISCONNECTED);
+                    break;
             }
         }
     }
@@ -289,7 +309,11 @@ class AsyncHTTPPost extends AsyncTask<Void, Void, String> {
                 }
             }
             else {
-                response = null;
+                String line;
+                final BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+                while ((line=br.readLine()) != null) {
+                    response += line;
+                }
             }
             
             return response;
@@ -304,13 +328,20 @@ class AsyncHTTPPost extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPostExecute(final String result) {
         super.onPostExecute(result);
-        if (this.taskListener != null && result != null) {
-            this.taskListener.onFinished(result);
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            if (this.taskListener != null && jsonObject.opt("error") == null) {
+                this.taskListener.onFinished(true, result);
+            } else {
+                this.taskListener.onFinished(false, result);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
     
     interface TaskListener {
-        void onFinished(String responseString);
+        void onFinished(boolean noErrorsFound, String responseString);
     }
 }
 
