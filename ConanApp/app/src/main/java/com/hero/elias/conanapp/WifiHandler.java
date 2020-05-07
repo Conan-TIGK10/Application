@@ -156,6 +156,8 @@ public class WifiHandler extends BroadcastReceiver {
     private void registerReceivers(){
         if (this.mainActivity != null) {
             this.mainActivity.registerReceiver(this, new IntentFilter(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION));
+            this.mainActivity.registerReceiver(this, new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
+            this.mainActivity.registerReceiver(this, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
         } else {
             Log.i("WIFI", "Main Activity Not Linked");
         }
@@ -172,11 +174,17 @@ public class WifiHandler extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, final Intent intent) {
         final String action = intent.getAction();
-        if (action.equals(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION)) {
-            if (intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)) {
-                this.updateState(WifiInState.CONNECTED);
-            } else {
-                this.updateState(WifiInState.DISCONNECTED);
+        
+        if (action.equals(WifiManager.WIFI_STATE_CHANGED_ACTION)){
+            int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, 0);
+            
+            switch (state){
+                case WifiManager.WIFI_STATE_ENABLED:
+                    this.updateState(WifiInState.CONNECTED);
+                    break;
+                case WifiManager.WIFI_STATE_DISABLED:
+                    this.updateState(WifiInState.DISCONNECTED);
+                    break;
             }
         }
     }

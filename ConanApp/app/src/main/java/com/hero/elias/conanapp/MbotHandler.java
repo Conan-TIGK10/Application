@@ -18,19 +18,22 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
     
     private ByteArrayOutputStream byteArray;
     
-    private long lastMillis;
     private long millisCounter;
+    private long lastMillis;
+    private long timeStamp;
+    private boolean collision;
     
     private Vector2D mbotPosition;
     private Vector2D mbotHeading;
     private int lastDistance;
     
     private MbotHandler() {
-        this.mbotCallbacks = new ArrayList<>();
+        this.mbotCallbacks = new ArrayList<MbotHandler.MbotCallback>();
         this.byteArray = new ByteArrayOutputStream();
         this.playbackThread = new Thread(this);
         this.mbotPosition = new Vector2D(0f, 0f);
         this.mbotHeading = new Vector2D(0f, 0f);
+        this.collision = false;
         BluetoothHandler.getInstance().addCallback(this);
     }
     
@@ -120,10 +123,26 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
             this.lastDistance = distData;
             
             this.mbotHeading = Vector2D.degreeToVector(gyroData);
-            float distance = (float)differenceDist * 1f;
-            this.mbotPosition.add(new Vector2D(this.mbotHeading.x * distance, this.mbotHeading.y * distance));
+            this.mbotPosition.add(new Vector2D(this.mbotHeading.x * differenceDist, this.mbotHeading.y * differenceDist));
             
             this.onNewData(this.mbotPosition, this.mbotHeading, this.millisCounter, lidarData, lightData);
+            
+/*            if (((lidarData < 20) || (lightData > 0))){
+                this.collision = true;
+            }
+            
+            if ((this.millisCounter - this.timeStamp) > 1000) {
+                this.timeStamp = this.millisCounter;
+                
+                if (this.collision){
+                    this.collision = false;
+                    WifiHandler.getInstance().postCollision(this.mbotPosition.x, this.mbotPosition.y, () -> {
+                    });
+                }else{
+                    WifiHandler.getInstance().postPosition(this.mbotPosition.x, this.mbotPosition.y, posId -> {
+                    });
+                }
+            }*/
         }
     }
     
