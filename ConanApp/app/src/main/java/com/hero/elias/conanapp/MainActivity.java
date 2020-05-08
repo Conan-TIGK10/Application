@@ -15,11 +15,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     
     private BottomNavigationView bottomNavigation;
@@ -48,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     
         this.checkLocationPermission();
         
-/*        WifiHandler.getInstance().createSession("Test Session", () -> {
+/*        WifiHandler.getInstance().createSession("T", () -> {
             WifiHandler.getInstance().postPosition(0.1, 0.2, (posId) -> {
                 WifiHandler.getInstance().getLastPosition((id, x, y, sessionId) -> {
                     Log.i("WIFI", "SESSION POST GET WORKS");
@@ -58,8 +53,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             WifiHandler.getInstance().postCollision(2, 4, () -> {
                 Log.i("WIFI", "COLLISION WORKS");
             });
-        });
-    */
+        });*/
+    
     }
     
     @Override

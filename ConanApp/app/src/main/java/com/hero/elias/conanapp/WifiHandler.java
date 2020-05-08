@@ -134,6 +134,18 @@ public class WifiHandler extends BroadcastReceiver {
         }
         new AsyncHTTPPost("http://3.122.218.59/api/session", jsonParam, (noErrorsFound, responseString) -> {
             if (noErrorsFound) {
+                
+                try {
+                    JSONObject jsonObject = new JSONObject(responseString);
+                    if (jsonObject.opt("error") == null) {
+                        createListener.onFinished(false, "");
+                    } else {
+                        createListener.onFinished(false, "");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                
                 try {
                     JSONObject jsonObject = new JSONObject(responseString);
                     this.sessionId = jsonObject.getInt("id");
@@ -142,6 +154,7 @@ public class WifiHandler extends BroadcastReceiver {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                
             } else {
                 try {
                     JSONObject jsonObject = new JSONObject(responseString);
@@ -328,15 +341,10 @@ class AsyncHTTPPost extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPostExecute(final String result) {
         super.onPostExecute(result);
-        try {
-            JSONObject jsonObject = new JSONObject(result);
-            if (this.taskListener != null && jsonObject.opt("error") == null) {
-                this.taskListener.onFinished(true, result);
-            } else {
-                this.taskListener.onFinished(false, result);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (this.taskListener != null && result != "") {
+            this.taskListener.onFinished(true, result);
+        } else {
+            this.taskListener.onFinished(false, result);
         }
     }
     

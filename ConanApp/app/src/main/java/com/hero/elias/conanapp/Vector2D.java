@@ -56,6 +56,14 @@ public class Vector2D {
         this.y += v.y;
     }
     
+    public void rotate(Vector2D origin, double degrees) {
+        double radians = (Math.PI / 180) * degrees;
+        float rotX = (float) (Math.cos(radians) * (this.x - origin.x) - Math.sin(radians) * (this.y - origin.y) + origin.x);
+        float rotY = (float) (Math.sin(radians) * (this.x - origin.x) + Math.cos(radians) * (this.y - origin.y) + origin.y);
+        
+        this.x = rotX;
+        this.y = rotY;
+    }
     
     public void subtract(Vector2D v) {
         this.x -= v.x;
@@ -67,8 +75,18 @@ public class Vector2D {
         this.y *= v.y;
     }
     
+    public void multiply(double mul) {
+        this.x *= mul;
+        this.y *= mul;
+    }
+    
     public void divide(Vector2D v) {
         this.x /= v.x;
         this.y /= v.y;
+    }
+    
+    public void divide(double div) {
+        this.x /= div;
+        this.y /= div;
     }
 }
