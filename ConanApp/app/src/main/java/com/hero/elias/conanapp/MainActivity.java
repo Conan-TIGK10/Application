@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         BluetoothHandler.getInstance().checkConnection();
         WifiHandler.getInstance().checkConnection();
     
-        MbotHandler.getInstance();
+        MbotHandler.getInstance().startThread();
     
         this.bottomNavigation = this.findViewById(R.id.bottom_navigation);
         this.bottomNavigation.setItemIconTintList(null);

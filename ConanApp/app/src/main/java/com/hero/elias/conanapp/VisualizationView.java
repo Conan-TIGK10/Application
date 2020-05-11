@@ -19,6 +19,7 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class VisualizationView extends View implements Choreographer.FrameCallback, MbotHandler.MbotCallback, RotationListener.OnRotationGestureListener, ScaleListener.OnScaleGestureListener {
     private Vector2D windowCenter;
@@ -167,9 +168,10 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
     
     @Override
     public void onNewData(Vector2D position, Vector2D heading, long millis, int lidar, int gap) {
-        if ((lidar < 10f) && ((millis - this.lidarMillisLast) > 1500)){
+        if (((lidar < 20f) || (gap > 0)) && ((millis - this.lidarMillisLast) > 1500)){
             synchronized (this.collisionList) {
-                this.collisionList.add(new Vector2D(position.x, position.y));
+                Vector2D v = new Vector2D(position.x, position.y);
+                this.collisionList.add(v);
             
                 if (this.collisionList.size() == 64) {
                     this.collisionList.remove(0);
@@ -304,8 +306,9 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
                 this.robotPositionDestination = MbotHandler.getInstance().getPosition().clone();
         
                 this.robotHeadingStart = this.robotHeadingCurrent.clone();
+    
                 this.robotHeadingDestination = MbotHandler.getInstance().getHeading().clone();
-        
+                
                 this.pathList.add(new Vector2D(
                         this.robotPositionCurrent.x,
                         this.robotPositionCurrent.y));
@@ -324,7 +327,10 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
         float xScale = (float) ((float) Tweening.sine(1.85, 2, 4, 0, this.secondsCounter) * (this.robotBaseScale * this.cameraZoom));
         float yScale = (float) ((float) Tweening.sine(1.85, 2, 4, Math.PI / 2.0, this.secondsCounter) * (this.robotBaseScale * this.cameraZoom));
         
-        this.robotMatrix.setRotate((float) ((float) Vector2D.vectorToDegree(this.robotHeadingCurrent) + this.cameraRotation), this.robotBitmap.getWidth() / 2f, this.robotBitmap.getHeight() / 2f);
+        double xAngle = this.robotHeadingCurrent.x;
+        double yAngle = -this.robotHeadingCurrent.y;
+    
+        this.robotMatrix.setRotate((float) ((float) Vector2D.vectorToDegree(new Vector2D(xAngle, yAngle)) + this.cameraRotation), this.robotBitmap.getWidth() / 2f, this.robotBitmap.getHeight() / 2f);
         this.robotMatrix.postScale(xScale, yScale, this.robotBitmap.getWidth() / 2f, this.robotBitmap.getHeight() / 2f);
         
         Vector2D pos = this.cameraTranslation(this.robotPositionCurrent);

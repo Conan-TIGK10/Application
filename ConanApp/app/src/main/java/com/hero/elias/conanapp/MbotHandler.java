@@ -26,6 +26,7 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
     private Vector2D mbotPosition;
     private Vector2D mbotHeading;
     private int lastDistance;
+    private int firstGyro;
     
     private MbotHandler() {
         this.mbotCallbacks = new ArrayList<MbotHandler.MbotCallback>();
@@ -34,7 +35,8 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
         this.mbotPosition = new Vector2D(0f, 0f);
         this.mbotHeading = new Vector2D(0f, 0f);
         this.collision = false;
-        BluetoothHandler.getInstance().addCallback(this);
+        this.firstGyro = -10000;
+        //BluetoothHandler.getInstance().addCallback(this);
     }
     
     public static MbotHandler getInstance() {
@@ -81,6 +83,7 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
     }
     
     private void parseMessage(String message){
+        //Log.i("MBOT", message);
         String[] splitMessage = message.split(",");
     
         // FORMAT : GYRO,DISTANCE,LIDAR,LIGHT,MILLIS
@@ -90,6 +93,12 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
             int lidarData = Integer.parseInt(splitMessage[2]); // 0-400 absolute strength of lidar sensor
             int lightData = Integer.parseInt(splitMessage[3]); // absolute lightsensor 0 = none, 1 = left, 2 = right, 3 = both
             long millisData = Integer.parseInt(splitMessage[4]); // 0-n millis accumlative overflow
+            
+            if (this.firstGyro == -10000){
+                this.firstGyro = gyroData;
+            }
+            
+            gyroData -= this.firstGyro;
     
             long diffrenceMillis = 0;
             if (millisData <= this.lastMillis){ // overflow, starts from 0 again
@@ -123,7 +132,9 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
             this.lastDistance = distData;
             
             this.mbotHeading = Vector2D.degreeToVector(gyroData);
-            this.mbotPosition.add(new Vector2D(this.mbotHeading.x * differenceDist, this.mbotHeading.y * differenceDist));
+            Vector2D v = new Vector2D(this.mbotHeading.x * differenceDist, this.mbotHeading.y * differenceDist);
+            v.multiply(2);
+            this.mbotPosition.add(v);
             
             this.onNewData(this.mbotPosition, this.mbotHeading, this.millisCounter, lidarData, lightData);
             
@@ -167,10 +178,12 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
     @Override
     public void run() {
         int msCounter = 0;
+        int angleCounter = 0;
         
         this.threadRunning = true;
         while (this.threadRunning){
             int randomMillis = Tweening.getRandomNumber(100, 1000);
+            angleCounter += 10;
             SystemClock.sleep(randomMillis);
             
             msCounter = (msCounter + randomMillis) % 65535; // simulate overflow
