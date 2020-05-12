@@ -5,7 +5,7 @@ INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\An
 INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-36:12
 INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:2:1-36:12
 MERGED from [com.github.john990:WaveView:v0.9] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\fc843f29fe7ed454572b592392a5a83c\jetified-WaveView-v0.9\AndroidManifest.xml:2:1-11:12
-MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\e641978a1ef5ed137622d3601f56a071\jetified-neatle-0.9.8\AndroidManifest.xml:25:1-37:12
+MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\b76ac68c6f086fe15977e0e50f5a6dd1\jetified-neatle-0.9.8\AndroidManifest.xml:25:1-37:12
 MERGED from [eo.view:bluetoothstate:1.1.1] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\4ec9f18e72543c7006e782735b87db56\jetified-bluetoothstate-1.1.1\AndroidManifest.xml:2:1-11:12
 MERGED from [com.google.android.material:material:1.2.0-alpha06] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\41895604aa2df47b12349d1cda8bb5d0\material-1.2.0-alpha06\AndroidManifest.xml:17:1-24:12
 MERGED from [eo.avd:bluetoothconnecting:1.1.1] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\5a443fb9e95c1f4848c0e6e4c5ef4b3b\jetified-bluetoothconnecting-1.1.1\AndroidManifest.xml:2:1-11:12
@@ -115,8 +115,8 @@ ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\Andro
 		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:29:22-76
 uses-permission#android.permission.BLUETOOTH
 ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:30:5-68
-MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\e641978a1ef5ed137622d3601f56a071\jetified-neatle-0.9.8\AndroidManifest.xml:33:5-68
-MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\e641978a1ef5ed137622d3601f56a071\jetified-neatle-0.9.8\AndroidManifest.xml:33:5-68
+MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\b76ac68c6f086fe15977e0e50f5a6dd1\jetified-neatle-0.9.8\AndroidManifest.xml:33:5-68
+MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\b76ac68c6f086fe15977e0e50f5a6dd1\jetified-neatle-0.9.8\AndroidManifest.xml:33:5-68
 	android:name
 		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:30:22-65
 uses-permission#android.permission.INTERNET
@@ -125,14 +125,14 @@ ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\Andro
 		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:31:22-64
 uses-permission#android.permission.BLUETOOTH_ADMIN
 ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:32:5-74
-MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\e641978a1ef5ed137622d3601f56a071\jetified-neatle-0.9.8\AndroidManifest.xml:34:5-74
-MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\e641978a1ef5ed137622d3601f56a071\jetified-neatle-0.9.8\AndroidManifest.xml:34:5-74
+MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\b76ac68c6f086fe15977e0e50f5a6dd1\jetified-neatle-0.9.8\AndroidManifest.xml:34:5-74
+MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\b76ac68c6f086fe15977e0e50f5a6dd1\jetified-neatle-0.9.8\AndroidManifest.xml:34:5-74
 	android:name
 		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:32:22-71
 uses-permission#android.permission.ACCESS_COARSE_LOCATION
 ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:33:5-81
-MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\e641978a1ef5ed137622d3601f56a071\jetified-neatle-0.9.8\AndroidManifest.xml:35:5-81
-MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\e641978a1ef5ed137622d3601f56a071\jetified-neatle-0.9.8\AndroidManifest.xml:35:5-81
+MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\b76ac68c6f086fe15977e0e50f5a6dd1\jetified-neatle-0.9.8\AndroidManifest.xml:35:5-81
+MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\b76ac68c6f086fe15977e0e50f5a6dd1\jetified-neatle-0.9.8\AndroidManifest.xml:35:5-81
 	android:name
 		ADDED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml:33:22-78
 uses-permission#android.permission.ACCESS_NETWORK_STATE
@@ -149,8 +149,8 @@ INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\An
 INJECTED from C:\Users\Alfred\Desktop\Conan\Application\ConanApp\app\src\main\AndroidManifest.xml
 MERGED from [com.github.john990:WaveView:v0.9] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\fc843f29fe7ed454572b592392a5a83c\jetified-WaveView-v0.9\AndroidManifest.xml:7:5-9:41
 MERGED from [com.github.john990:WaveView:v0.9] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\fc843f29fe7ed454572b592392a5a83c\jetified-WaveView-v0.9\AndroidManifest.xml:7:5-9:41
-MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\e641978a1ef5ed137622d3601f56a071\jetified-neatle-0.9.8\AndroidManifest.xml:29:5-31:41
-MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\e641978a1ef5ed137622d3601f56a071\jetified-neatle-0.9.8\AndroidManifest.xml:29:5-31:41
+MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\b76ac68c6f086fe15977e0e50f5a6dd1\jetified-neatle-0.9.8\AndroidManifest.xml:29:5-31:41
+MERGED from [si.inova:neatle:0.9.8] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\b76ac68c6f086fe15977e0e50f5a6dd1\jetified-neatle-0.9.8\AndroidManifest.xml:29:5-31:41
 MERGED from [eo.view:bluetoothstate:1.1.1] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\4ec9f18e72543c7006e782735b87db56\jetified-bluetoothstate-1.1.1\AndroidManifest.xml:7:5-9:41
 MERGED from [eo.view:bluetoothstate:1.1.1] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\4ec9f18e72543c7006e782735b87db56\jetified-bluetoothstate-1.1.1\AndroidManifest.xml:7:5-9:41
 MERGED from [com.google.android.material:material:1.2.0-alpha06] C:\Users\Alfred\.gradle\caches\transforms-2\files-2.1\41895604aa2df47b12349d1cda8bb5d0\material-1.2.0-alpha06\AndroidManifest.xml:20:5-44

@@ -94,7 +94,9 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
                 this.bluetoothState.setState(BluetoothState.State.CONNECTED);
                 this.bluetoothStateText.setText("Connected !");
                 if (WifiHandler.getInstance().getState().equals(WifiHandler.WifiInState.CONNECTED)){
-                    createSession.setVisibility(View.VISIBLE);
+                    if(this.createSession != null){
+                        createSession.setVisibility(View.VISIBLE);
+                    }
                 } else {
                     WifiHandler.getInstance().checkConnection();
                 }

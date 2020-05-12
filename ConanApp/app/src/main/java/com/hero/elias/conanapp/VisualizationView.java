@@ -118,7 +118,7 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
         this.path = new Path();
         this.pathList = new ArrayList<Vector2D>();
         this.pathCornerEffectPhaseCounter = 0.0;
-        this.pathCornerEffect = new CornerPathEffect(200);
+        this.pathCornerEffect = new CornerPathEffect(50);
         
         this.collisionBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.icons8_vlc_64px, bitmapOptions);
         this.collisionMatrix = new Matrix();
@@ -176,8 +176,13 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
                 if (this.collisionList.size() == 64) {
                     this.collisionList.remove(0);
                 }
+                
             }
-            
+    
+            this.pathList.add(new Vector2D(
+                    this.robotPositionCurrent.x,
+                    this.robotPositionCurrent.y));
+    
             this.lidarMillisLast = millis;
         }
     }
@@ -227,9 +232,9 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
         gridPaint.setARGB(127, 64, 64, 64);
         
         for (int i = 0; i < 64; i++){
-            double xPos = Tweening.linear(i, 0, 64, -2048, 2048);
+            double xPos = Tweening.linear(i, 0, 64, -4096, 4096);
             for (int j = 0; j < 64; j++){
-                double yPos = Tweening.linear(j, 0, 64, -2048, 2048);
+                double yPos = Tweening.linear(j, 0, 64, -4096, 4096);
                 
                 Vector2D pos = this.cameraTranslation(new Vector2D(xPos, yPos));
                 canvas.drawCircle((float)pos.x, (float)pos.y, (float) (4f * this.cameraZoom), gridPaint);
@@ -242,6 +247,16 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
             this.pathList.add(new Vector2D(
                     this.robotPositionCurrent.x,
                     this.robotPositionCurrent.y));
+        }
+    
+        if (this.frameCounter % 120 == 0){
+            this.pathList.add(new Vector2D(
+                    this.robotPositionCurrent.x,
+                    this.robotPositionCurrent.y));
+    
+            if (this.pathList.size() > 64) {
+                this.pathList.remove(0);
+            }
         }
         
         this.path.reset();
@@ -294,7 +309,7 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
     }
     
     private void updateRobot(Canvas canvas){
-        if (this.millisCurrent < MbotHandler.getInstance().getMillis()){
+/*        if (this.millisCurrent < MbotHandler.getInstance().getMillis()){
             this.millisCurrent += this.deltaTimeMillis;
     
             if (this.millisCurrent >= this.millisDestination){
@@ -306,23 +321,23 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
                 this.robotPositionDestination = MbotHandler.getInstance().getPosition().clone();
         
                 this.robotHeadingStart = this.robotHeadingCurrent.clone();
-    
                 this.robotHeadingDestination = MbotHandler.getInstance().getHeading().clone();
-                
-                this.pathList.add(new Vector2D(
-                        this.robotPositionCurrent.x,
-                        this.robotPositionCurrent.y));
-                
-                if (this.pathList.size() == 64) {
-                    this.pathList.remove(0);
-                }
             }
     
             this.robotPositionCurrent = Tweening.linear(this.millisCurrent, this.millisStart, this.millisDestination, this.robotPositionStart, this.robotPositionDestination);
     
             this.robotHeadingCurrent = Tweening.linear(this.millisCurrent, this.millisStart, this.millisDestination, this.robotHeadingStart, this.robotHeadingDestination);
             this.robotHeadingCurrent = Vector2D.normalizeVector(this.robotHeadingCurrent);
-        }
+        }*/
+    
+        //this.robotPositionCurrent = MbotHandler.getInstance().getPosition().clone();
+        //this.robotHeadingCurrent = MbotHandler.getInstance().getHeading().clone();
+    
+        this.robotPositionCurrent.x = Tweening.smoothToTarget(this.robotPositionCurrent.x, MbotHandler.getInstance().getPosition().x, 1.1f);
+        this.robotPositionCurrent.y = Tweening.smoothToTarget(this.robotPositionCurrent.y, MbotHandler.getInstance().getPosition().y, 1.1f);
+    
+        this.robotHeadingCurrent.x = Tweening.smoothToTarget(this.robotHeadingCurrent.x, MbotHandler.getInstance().getHeading().x, 1.1f);
+        this.robotHeadingCurrent.y = Tweening.smoothToTarget(this.robotHeadingCurrent.y, MbotHandler.getInstance().getHeading().y, 1.1f);
     
         float xScale = (float) ((float) Tweening.sine(1.85, 2, 4, 0, this.secondsCounter) * (this.robotBaseScale * this.cameraZoom));
         float yScale = (float) ((float) Tweening.sine(1.85, 2, 4, Math.PI / 2.0, this.secondsCounter) * (this.robotBaseScale * this.cameraZoom));

@@ -36,7 +36,7 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
         this.mbotHeading = new Vector2D(0f, 0f);
         this.collision = false;
         this.firstGyro = -10000;
-        //BluetoothHandler.getInstance().addCallback(this);
+        BluetoothHandler.getInstance().addCallback(this);
     }
     
     public static MbotHandler getInstance() {
@@ -112,25 +112,34 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
             int differenceDist = 0;
             if (distData >= 0){ // driving forwards
                 if (this.lastDistance < 0){ // switching from backwards to fowards, reset to 0
+                    distData = 0;
                     this.lastDistance = 0;
                 }
+                
                 if (distData >= this.lastDistance){ // driving in same direction, distData is accumlating
                     differenceDist = distData - this.lastDistance; // current - previous to get difference
+                    this.lastDistance = distData;
                 }else{ // driving in new direction, distData starts from 0
-                    differenceDist = distData;
+                    differenceDist = 0;
                 }
             }else{ // driving backwards
                 if (this.lastDistance > 0){ // switcing from forwards to backwards, reset to 0
+                    distData = 0;
                     this.lastDistance = 0;
                 }
                 if (distData <= this.lastDistance){ // backwards in same direction, distData is accumilating
                     differenceDist = distData - this.lastDistance; // current - previous to get difference
+                    this.lastDistance = distData;
                 }else{ // backwards in new direction, distData starts from 0
-                    differenceDist = distData;
+                    differenceDist = 0;
                 }
             }
-            this.lastDistance = distData;
-            
+    
+            Log.i("ROBO", String.valueOf(message));
+            if (Math.abs(differenceDist) > 40){
+                Log.i("DIFF", String.valueOf(differenceDist));
+            }
+    
             this.mbotHeading = Vector2D.degreeToVector(gyroData);
             Vector2D v = new Vector2D(this.mbotHeading.x * differenceDist, this.mbotHeading.y * differenceDist);
             v.multiply(2);

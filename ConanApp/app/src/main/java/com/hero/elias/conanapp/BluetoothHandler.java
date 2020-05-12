@@ -6,16 +6,23 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
 import android.os.ParcelUuid;
 import android.util.Log;
 
+import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import si.inova.neatle.Neatle;
 import si.inova.neatle.operation.CharacteristicSubscription;
@@ -46,10 +53,13 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
     
     private BluetoothInState bluetoothState;
     
+    private long timeStamp;
+    
     private BluetoothHandler() {
         this.bluetoothCallback = new ArrayList<BluetoothCallback>();
         this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         this.bluetoothState = BluetoothInState.NOTFOUND;
+        this.timeStamp = 0;
     }
     
     public static BluetoothHandler getInstance() {
@@ -106,7 +116,30 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        
+        this.writeToDevice(bytes);
     
+/*        long currTime = System.currentTimeMillis();
+        long difference = currTime - this.timeStamp;
+        if (difference > 50){
+            this.timeStamp = System.currentTimeMillis();
+            this.writeToDevice(bytes);
+
+        }else{
+            this.timeStamp = System.currentTimeMillis();
+        
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                   BluetoothHandler.getInstance().writeToDevice(bytes);
+                }
+            }, difference);
+        }*/
+    
+
+    }
+    
+    private void writeToDevice(final byte[] bytes){
         if (this.bluetoothState == BluetoothInState.CONNECTED){
             final ByteArrayInputSource inputSource = new ByteArrayInputSource(bytes);
             final Operation writeOperation = Neatle.createOperationBuilder(this.mainActivity)
