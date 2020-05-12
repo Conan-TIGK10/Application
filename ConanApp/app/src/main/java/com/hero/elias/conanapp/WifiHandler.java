@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.util.JsonReader;
 import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
@@ -14,6 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -43,9 +45,11 @@ public class WifiHandler extends BroadcastReceiver {
     private WifiInState wifiState;
     
     private final ArrayList<WifiCallback> wifiCallback;
+    private String sessionName;
     
     private WifiHandler() {
         this.sessionSet = false;
+        this.sessionName = "";
         this.wifiCallback = new ArrayList<WifiCallback>();
     }
     
@@ -57,24 +61,36 @@ public class WifiHandler extends BroadcastReceiver {
     }
     
     public void getLastPosition(final PositionGetListener getListener) {
-        new AsyncHTTPGet("http://3.122.218.59/api/position", response -> {
+        new AsyncHTTPGet("http://3.122.218.59/api/position",  (error, response) -> {
             try {
-                JSONArray jsonArray = new JSONArray(response);
-                if (jsonArray.length() > 0){
-                    JSONObject jsonObject = jsonArray.getJSONObject(jsonArray.length()-1);
-                    getListener.onFinished(jsonObject.getInt("id"), jsonObject.getDouble("x"), jsonObject.getDouble("y"), jsonObject.getInt("sessionId"));
+                Object json = new JSONTokener(response).nextValue();
+                if (json instanceof JSONObject){
+                    JSONObject jsonObject = new JSONObject(response);
+                    Log.i("ERR", String.valueOf(jsonObject.get("error")));
+                }
+                else if (json instanceof JSONArray){
+                    JSONArray jsonArray = new JSONArray(response);
+                    if (jsonArray.length() > 0){
+                        JSONObject jsonObject = jsonArray.getJSONObject(jsonArray.length()-1);
+                        getListener.onFinished(
+                                jsonObject.getInt("id"),
+                                jsonObject.getDouble("x"),
+                                jsonObject.getDouble("y"),
+                                jsonObject.getInt("rotation"),
+                                jsonObject.getInt("sessionId"));
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }).execute();
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
     
     interface PositionGetListener {
-        void onFinished(int id, double x, double y, int sessionId);
+        void onFinished(int id, double x, double y, int rotation, int sessionId);
     }
     
-    public void postPosition(final double x, final double y, final PositionPostListener postListener) {
+    public void postPosition(final double x, final double y, final int rotation, final long millis, final PositionPostListener postListener) {
         if (!this.sessionSet){ return; }
         
         final Date now = new Date();
@@ -86,28 +102,30 @@ public class WifiHandler extends BroadcastReceiver {
             jsonParam.put("x", x);
             jsonParam.put("y", y);
             jsonParam.put("sessionId", this.sessionId);
-            jsonParam.put("read_at", date);
+            jsonParam.put("rotation", rotation);
+            jsonParam.put("read_at", millis);
         } catch (final JSONException e) {
             e.printStackTrace();
         }
         
         new AsyncHTTPPost("http://3.122.218.59/api/position", jsonParam, (error, responseString) -> {
+            if (!error){return;}
             try {
                 JSONObject jsonObject = new JSONObject(responseString);
                 postListener.onFinished(jsonObject.getInt("id"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }).execute();
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
     interface PositionPostListener {
         void onFinished(int posId);
     }
     
-    public void postCollision(final double x, final double y, final CollisionPostListener collisionListener){
+    public void postCollision(final double x, final double y, final int rotation, final long millis, final CollisionPostListener collisionListener){
         if (!this.sessionSet){ return; }
     
-        this.postPosition(x, y, (id) -> {
+        this.postPosition(x, y, rotation, millis, (id) -> {
             final JSONObject jsonParam = new JSONObject();
             try {
                 jsonParam.put("positionId", id);
@@ -117,7 +135,7 @@ public class WifiHandler extends BroadcastReceiver {
     
             new AsyncHTTPPost("http://3.122.218.59/api/collision", jsonParam, (error, responseString) -> {
                 collisionListener.onFinished();
-            }).execute();
+            }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         });
     }
     
@@ -134,7 +152,6 @@ public class WifiHandler extends BroadcastReceiver {
         }
         new AsyncHTTPPost("http://3.122.218.59/api/session", jsonParam, (noErrorsFound, responseString) -> {
             if (noErrorsFound) {
-                
                 try {
                     JSONObject jsonObject = new JSONObject(responseString);
                     if (jsonObject.opt("error") == null) {
@@ -149,6 +166,7 @@ public class WifiHandler extends BroadcastReceiver {
                 try {
                     JSONObject jsonObject = new JSONObject(responseString);
                     this.sessionId = jsonObject.getInt("id");
+                    this.sessionName = sessionName;
                     this.sessionSet = true;
                     createListener.onFinished(false, "");
                 } catch (JSONException e) {
@@ -163,7 +181,7 @@ public class WifiHandler extends BroadcastReceiver {
                     e.printStackTrace();
                 }
             }
-        }).execute();
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
     interface SessionCreateListener {
         void onFinished(boolean error, String message);
@@ -295,8 +313,8 @@ class AsyncHTTPPost extends AsyncTask<Void, Void, String> {
             final URL url = new URL(this.urlString);
     
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(15000);
-            conn.setConnectTimeout(15000);
+            //conn.setReadTimeout(15000);
+            //conn.setConnectTimeout(15000);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
             conn.setRequestProperty("Accept", "application/json");
@@ -312,36 +330,38 @@ class AsyncHTTPPost extends AsyncTask<Void, Void, String> {
             os.close();
             
             final int responseCode = conn.getResponseCode();
-    
-            String response = "";
-            if (responseCode == HttpsURLConnection.HTTP_OK) {
-                String line;
-                final BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                while ((line=br.readLine()) != null) {
-                    response += line;
-                }
-            }
-            else {
-                String line;
-                final BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-                while ((line=br.readLine()) != null) {
-                    response += line;
-                }
+            
+            if (responseCode != HttpsURLConnection.HTTP_OK){
+                Log.i("ERR" , "OH NO");
             }
             
+            Log.i("ERR" , String.valueOf(this.jsonObject));
+    
+            String response = "";
+
+            String line;
+            final BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            while ((line=br.readLine()) != null) {
+                response += line;
+            }
+    
+            Log.i("ERR" , response);
+            
+            conn.disconnect();
+    
             return response;
             
         } catch (final Exception e) {
             e.printStackTrace();
         }
     
-        return null;
+        return "";
     }
     
     @Override
     protected void onPostExecute(final String result) {
         super.onPostExecute(result);
-        if (this.taskListener != null && result != "") {
+        if (this.taskListener != null && !result.equals("")) {
             this.taskListener.onFinished(true, result);
         } else {
             this.taskListener.onFinished(false, result);
@@ -372,36 +392,41 @@ class AsyncHTTPGet extends AsyncTask<Void, Void, String> {
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
             conn.setRequestProperty("Accept", "application/json");
-            conn.setDoOutput(true);
+            conn.setDoInput(true);
             conn.connect();
             
-            final BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-            final StringBuilder sb = new StringBuilder();
-            
+            final int responseCode = conn.getResponseCode();
+    
+            String response = "";
+
             String line;
+            final BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             while ((line = br.readLine()) != null) {
-                sb.append(line + "\n");
+                response += line;
             }
-            br.close();
-            
-            return sb.toString();
+    
+            conn.disconnect();
+    
+            return response;
         } catch (final Exception e) {
             e.printStackTrace();
         }
         
-        return null;
+        return "";
     }
     
     @Override
     protected void onPostExecute(final String result) {
         super.onPostExecute(result);
-        if (this.taskListener != null && result != null) {
-            this.taskListener.onFinished(result);
+        if (this.taskListener != null && !result.equals("")) {
+            this.taskListener.onFinished(true ,result);
+        }else{
+            this.taskListener.onFinished(false, result);
         }
     }
     
     interface TaskListener {
-        void onFinished(String responseString);
+        void onFinished(boolean noErrorsFound, String responseString);
     }
 }
 

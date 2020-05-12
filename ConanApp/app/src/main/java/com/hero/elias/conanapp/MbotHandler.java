@@ -138,22 +138,22 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
             
             this.onNewData(this.mbotPosition, this.mbotHeading, this.millisCounter, lidarData, lightData);
             
-/*            if (((lidarData < 20) || (lightData > 0))){
+            if (((lidarData < 20) || (lightData > 0))){
                 this.collision = true;
             }
             
-            if ((this.millisCounter - this.timeStamp) > 1000) {
+            if ((this.millisCounter - this.timeStamp) > 500) {
                 this.timeStamp = this.millisCounter;
                 
                 if (this.collision){
                     this.collision = false;
-                    WifiHandler.getInstance().postCollision(this.mbotPosition.x, this.mbotPosition.y, () -> {
+                    WifiHandler.getInstance().postCollision(this.mbotPosition.x, this.mbotPosition.y, gyroData, this.millisCounter, () -> {
                     });
                 }else{
-                    WifiHandler.getInstance().postPosition(this.mbotPosition.x, this.mbotPosition.y, posId -> {
+                    WifiHandler.getInstance().postPosition(this.mbotPosition.x, this.mbotPosition.y, gyroData, this.millisCounter,  posId -> {
                     });
                 }
-            }*/
+            }
         }
     }
     
@@ -191,7 +191,7 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
             String s = String.valueOf(Tweening.getRandomNumber(-360, 360)) + ","
                     + String.valueOf(Tweening.getRandomNumber(-100, 100)) + ","
                     + String.valueOf(Tweening.getRandomNumber(0, 400)) + ","
-                    + String.valueOf(Tweening.getRandomNumber(0, 3)) + ","
+                    + String.valueOf(Tweening.getRandomNumber(-50, 3)) + ","
                     + String.valueOf(msCounter);
             
             this.parseMessage(s);
