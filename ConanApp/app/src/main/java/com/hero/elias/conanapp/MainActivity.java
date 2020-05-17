@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         BluetoothHandler.getInstance().checkConnection();
         WifiHandler.getInstance().checkConnection();
     
-        MbotHandler.getInstance();
+        MbotHandler.getInstance().startThread();
     
         this.bottomNavigation = this.findViewById(R.id.bottom_navigation);
         this.bottomNavigation.setItemIconTintList(null);
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             this.currentScreen = toFragment;
             
             transaction.replace(R.id.bottom_nav_container, fragment);
-            transaction.addToBackStack(null);
+            transaction.addToBackStack(toFragment);
             transaction.commit();
         }
     }

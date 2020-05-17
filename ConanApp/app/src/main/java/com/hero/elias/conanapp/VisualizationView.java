@@ -61,12 +61,19 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
     private double pathCornerEffectPhaseCounter;
     
     private long lidarMillisLast;
+    private long gapMillisLast;
     
     private Bitmap collisionBitmap;
     private Matrix collisionMatrix;
     private float collisionBaseScale;
     private List<Vector2D> collisionList;
     private Paint collisionPaint;
+    
+    private Bitmap collisionLidarBitmap;
+    private Matrix collisionLidarMatrix;
+    private float collisionLidarBaseScale;
+    private List<Vector2D> collisionLidarList;
+    private Paint collisionLidarPaint;
     
     private ScaleGestureDetector scaleDetector;
     private RotationListener rotationDetector;
@@ -104,7 +111,8 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
         this.robotBaseScale = 0.25f;
         
         this.lidarMillisLast = 0;
-        
+        this.gapMillisLast = 0;
+    
         this.pathPaint = new Paint();
         this.pathPaint.setStrokeWidth(8f);
         this.pathPaint.setARGB(64, 255, 0, 0);
@@ -126,6 +134,13 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
         this.collisionPaint = new Paint();
         this.collisionPaint.setARGB(255, 0, 255, 0);
         this.collisionBaseScale = 0.25f;
+    
+        this.collisionLidarBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.icons8_road_closure_64px, bitmapOptions);
+        this.collisionLidarMatrix = new Matrix();
+        this.collisionLidarList = new ArrayList<Vector2D>();
+        this.collisionLidarPaint = new Paint();
+        this.collisionLidarPaint.setARGB(255, 0, 255, 0);
+        this.collisionLidarBaseScale = 0.25f;
     
         this.millisCurrent = MbotHandler.getInstance().getMillis();
         this.millisStart = 0;
@@ -168,7 +183,7 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
     
     @Override
     public void onNewData(Vector2D position, Vector2D heading, long millis, int lidar, int gap) {
-        if (((lidar < 20f) || (gap > 0)) && ((millis - this.lidarMillisLast) > 1500)){
+        if (((gap > 0)) && ((millis - this.gapMillisLast) > 1500)){
             synchronized (this.collisionList) {
                 Vector2D v = new Vector2D(position.x, position.y);
                 this.collisionList.add(v);
@@ -183,6 +198,24 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
                     this.robotPositionCurrent.x,
                     this.robotPositionCurrent.y));
     
+            this.gapMillisLast = millis;
+        }
+    
+        if (((lidar < 5f)) && ((millis - this.lidarMillisLast) > 1500)){
+            synchronized (this.collisionLidarList) {
+                Vector2D v = new Vector2D(position.x, position.y);
+                this.collisionLidarList.add(v);
+            
+                if (this.collisionLidarList.size() == 64) {
+                    this.collisionLidarList.remove(0);
+                }
+            
+            }
+        
+            this.pathList.add(new Vector2D(
+                    this.robotPositionCurrent.x,
+                    this.robotPositionCurrent.y));
+        
             this.lidarMillisLast = millis;
         }
     }
@@ -304,6 +337,26 @@ public class VisualizationView extends View implements Choreographer.FrameCallba
                         this.collisionBitmap.getHeight() / 2f);
                 
                 canvas.drawBitmap(this.collisionBitmap, this.collisionMatrix, null);
+            }
+        }
+    
+        // Animated bounce animation scaling, to make scaling work properly yScale needs to be stretched 180 degrees out of phase in time
+        xScale = (float) ((float) Tweening.sine(0.90, 1, 4, 0, this.secondsCounter) * (this.collisionLidarBaseScale * this.cameraZoom));
+        yScale = (float) ((float) Tweening.sine(0.90, 1, 4, Math.PI / 2.0, this.secondsCounter) * (this.collisionLidarBaseScale * this.cameraZoom));
+    
+        synchronized (this.collisionLidarList) { // lock access to list to avoid threading
+            for (int i = 0; i < this.collisionLidarList.size(); i++) {
+                Vector2D pos = this.cameraTranslation(this.collisionLidarList.get(i));
+            
+                this.collisionLidarMatrix.setTranslate(
+                        (float) pos.x - (this.collisionLidarBitmap.getWidth() / 2f),
+                        (float) pos.y - (this.collisionLidarBitmap.getHeight() / 2f));
+            
+                this.collisionLidarMatrix.preScale(
+                        xScale, yScale, this.collisionLidarBitmap.getWidth() / 2f,
+                        this.collisionLidarBitmap.getHeight() / 2f);
+            
+                canvas.drawBitmap(this.collisionLidarBitmap, this.collisionLidarMatrix, null);
             }
         }
     }

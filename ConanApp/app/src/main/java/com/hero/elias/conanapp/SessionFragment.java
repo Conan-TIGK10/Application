@@ -48,15 +48,12 @@ public class SessionFragment extends Fragment {
             public void onClick(View v) {
                 String form = String.valueOf(submitForm.getText());
                 try {
-                    WifiHandler.getInstance().createSession(form, new WifiHandler.SessionCreateListener() {
-                        @Override
-                        public void onFinished(boolean error, String message) {
-                            if (error) {
-                                sessionError.setVisibility(View.VISIBLE);
-                                sessionError.setText(message);
-                            } else {
-                                closeFragment();
-                            }
+                    WifiHandler.getInstance().createSession(form, (error, message) -> {
+                        if (error) {
+                            sessionError.setVisibility(View.VISIBLE);
+                            sessionError.setText(message);
+                        } else {
+                            closeFragment();
                         }
                     });
                 }catch (Exception e) {
@@ -67,6 +64,6 @@ public class SessionFragment extends Fragment {
     }
 
     private void closeFragment() {
-        getActivity().getSupportFragmentManager().popBackStack();
+        getActivity().getSupportFragmentManager().popBackStack("Home", 0);
     }
 }

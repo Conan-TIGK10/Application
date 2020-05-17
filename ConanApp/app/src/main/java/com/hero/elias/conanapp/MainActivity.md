@@ -18,7 +18,7 @@ initializes the bottom navigation. Loads "home" fragment
 none
 ```
 
-## `onPause() : void`
+## `onStop() : void`
 
 **Description** : called automatically when application is paused, for
 example when user switches to another app. Should be used to pause
@@ -30,21 +30,10 @@ threads and save data.
 none
 ```
 
-## `onResume() : void`
+## `onStart() : void`
 
 **Description** : called automatically when application starts after
 being paused, should be used to initalize data and startup threads.
-
-### Use:
-
-```java
-none
-```
-
-## `onDestroy() : void`
-
-**Description** : called automatically when application is destroyed,
-for example when user turns off the app. Should be used to save data.
 
 ### Use:
 

@@ -110,7 +110,6 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
     }
     
     public void write(final byte[] bytes) {
-    
         try {
             Log.i("BT", new String(bytes, "US-ASCII"));
         } catch (UnsupportedEncodingException e) {
@@ -118,25 +117,6 @@ public class BluetoothHandler extends BroadcastReceiver implements Characteristi
         }
         
         this.writeToDevice(bytes);
-    
-/*        long currTime = System.currentTimeMillis();
-        long difference = currTime - this.timeStamp;
-        if (difference > 50){
-            this.timeStamp = System.currentTimeMillis();
-            this.writeToDevice(bytes);
-
-        }else{
-            this.timeStamp = System.currentTimeMillis();
-        
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                   BluetoothHandler.getInstance().writeToDevice(bytes);
-                }
-            }, difference);
-        }*/
-    
-
     }
     
     private void writeToDevice(final byte[] bytes){

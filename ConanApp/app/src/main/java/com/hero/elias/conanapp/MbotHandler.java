@@ -20,6 +20,7 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
     
     private long millisCounter;
     private long lastMillis;
+    private long firstMillis;
     private long timeStamp;
     private boolean collision;
     
@@ -36,6 +37,8 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
         this.mbotHeading = new Vector2D(0f, 0f);
         this.collision = false;
         this.firstGyro = -10000;
+        this.millisCounter = 0;
+        this.firstMillis = -1000;
         BluetoothHandler.getInstance().addCallback(this);
     }
     
@@ -83,7 +86,6 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
     }
     
     private void parseMessage(String message){
-        //Log.i("MBOT", message);
         String[] splitMessage = message.split(",");
     
         // FORMAT : GYRO,DISTANCE,LIDAR,LIGHT,MILLIS
@@ -94,12 +96,6 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
             int lightData = Integer.parseInt(splitMessage[3]); // absolute lightsensor 0 = none, 1 = left, 2 = right, 3 = both
             long millisData = Integer.parseInt(splitMessage[4]); // 0-n millis accumlative overflow
             
-            if (this.firstGyro == -10000){
-                this.firstGyro = gyroData;
-            }
-            
-            gyroData -= this.firstGyro;
-    
             long diffrenceMillis = 0;
             if (millisData <= this.lastMillis){ // overflow, starts from 0 again
                 diffrenceMillis = millisData;
@@ -108,8 +104,18 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
             }
             this.millisCounter += diffrenceMillis;
             this.lastMillis = millisData;
+    
+            this.mbotHeading = Vector2D.degreeToVector(gyroData);
+    
+            if(distData == 2){
+                Vector2D v = new Vector2D(this.mbotHeading.x * 5, this.mbotHeading.y * 5);
+                this.mbotPosition.add(v);
+            }else if(distData == 0){
+                Vector2D v = new Vector2D(this.mbotHeading.x * -5, this.mbotHeading.y * -5);
+                this.mbotPosition.add(v);
+            }
             
-            int differenceDist = 0;
+/*            int differenceDist = 0;
             if (distData >= 0){ // driving forwards
                 if (this.lastDistance < 0){ // switching from backwards to fowards, reset to 0
                     distData = 0;
@@ -135,23 +141,17 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
                 }
             }
     
-            Log.i("ROBO", String.valueOf(message));
-            if (Math.abs(differenceDist) > 40){
-                Log.i("DIFF", String.valueOf(differenceDist));
-            }
-    
             this.mbotHeading = Vector2D.degreeToVector(gyroData);
             Vector2D v = new Vector2D(this.mbotHeading.x * differenceDist, this.mbotHeading.y * differenceDist);
-            v.multiply(2);
-            this.mbotPosition.add(v);
-            
+            this.mbotPosition.add(v);*/
+    
             this.onNewData(this.mbotPosition, this.mbotHeading, this.millisCounter, lidarData, lightData);
             
-            if (((lidarData < 20) || (lightData > 0))){
+            if (((lidarData < 5) || (lightData > 0))){ // save that a collision has happend for the next time we send data to backend
                 this.collision = true;
             }
             
-            if ((this.millisCounter - this.timeStamp) > 500) {
+            if ((this.millisCounter - this.timeStamp) > 250) { // send data to backend
                 this.timeStamp = this.millisCounter;
                 
                 if (this.collision){
@@ -188,17 +188,26 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
     public void run() {
         int msCounter = 0;
         int angleCounter = 0;
+        int updateCount = 0;
+        int mode = 0;
+        int direction = 0;
         
         this.threadRunning = true;
         while (this.threadRunning){
-            int randomMillis = Tweening.getRandomNumber(100, 1000);
+            updateCount++;
+            int randomMillis = Tweening.getRandomNumber(10, 50);
             angleCounter += 10;
             SystemClock.sleep(randomMillis);
             
-            msCounter = (msCounter + randomMillis) % 65535; // simulate overflow
+            if (updateCount % 100 == 0){
+                mode = Tweening.getRandomNumber(0, 3);
+                direction = Tweening.getRandomNumber(0, 360);
+            }
             
-            String s = String.valueOf(Tweening.getRandomNumber(-360, 360)) + ","
-                    + String.valueOf(Tweening.getRandomNumber(-100, 100)) + ","
+            msCounter = (msCounter + randomMillis); // simulate overflow
+            
+            String s = String.valueOf(direction) + ","
+                    + String.valueOf(mode) + ","
                     + String.valueOf(Tweening.getRandomNumber(0, 400)) + ","
                     + String.valueOf(Tweening.getRandomNumber(-50, 3)) + ","
                     + String.valueOf(msCounter);

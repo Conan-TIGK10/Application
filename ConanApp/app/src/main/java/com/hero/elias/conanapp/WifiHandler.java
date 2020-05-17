@@ -93,9 +93,9 @@ public class WifiHandler extends BroadcastReceiver {
     public void postPosition(final double x, final double y, final int rotation, final long millis, final PositionPostListener postListener) {
         if (!this.sessionSet){ return; }
         
-        final Date now = new Date();
+/*        final Date now = new Date();
         final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.GERMANY);
-        final String date = dateFormat.format(now);
+        final String date = dateFormat.format(now);*/
         
         final JSONObject jsonParam = new JSONObject();
         try {
@@ -128,6 +128,7 @@ public class WifiHandler extends BroadcastReceiver {
         this.postPosition(x, y, rotation, millis, (id) -> {
             final JSONObject jsonParam = new JSONObject();
             try {
+                jsonParam.put("sessionId", this.sessionId);
                 jsonParam.put("positionId", id);
             } catch (final JSONException e) {
                 e.printStackTrace();
