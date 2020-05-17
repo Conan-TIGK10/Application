@@ -19,10 +19,10 @@
 
 
 ## Documentation
-* [Bluetooth](https://github.com/Conan-TIGK10/Application/blob/development/ConanApp/src/main/java/com/hero/elias/conanapp/BluetoothHandler.md)
-* [MainActivity](https://github.com/Conan-TIGK10/Application/blob/development/ConanApp/src/main/java/com/hero/elias/conanapp/MainActivity.md)
-* [MbotHandler](https://github.com/Conan-TIGK10/Application/blob/development/ConanApp/src/main/java/com/hero/elias/conanapp/MbotHandler.md)
-* [WifiHandler](https://github.com/Conan-TIGK10/Application/blob/development/ConanApp/src/main/java/com/hero/elias/conanapp/WifiHandler.md)
+* [Bluetooth](https://github.com/Conan-TIGK10/Application/blob/development/ConanApp/app/src/main/java/com/hero/elias/conanapp/BluetoothHandler.md)
+* [MainActivity](https://github.com/Conan-TIGK10/Application/blob/development/ConanApp/app/src/main/java/com/hero/elias/conanapp/MainActivity.md)
+* [MbotHandler](https://github.com/Conan-TIGK10/Application/blob/development/ConanApp/app/src/main/java/com/hero/elias/conanapp/MbotHandler.md)
+* [WifiHandler](https://github.com/Conan-TIGK10/Application/blob/development/ConanApp/app/src/main/java/com/hero/elias/conanapp/WifiHandler.md)
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
