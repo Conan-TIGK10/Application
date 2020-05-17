@@ -13,12 +13,35 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     
     private BottomNavigationView bottomNavigation;
     private String currentScreen;
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
+    
+    private void alertDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        
+        builder.setTitle("Location Permission")
+                .setMessage("Location Permission is Required To Connect to the Mbot")
+                .setPositiveButton("OK", null);
+        
+        final AlertDialog dialog = builder.create();
+        
+        dialog.show();
+    }
+    
+    private boolean checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION);
+            return false;
+        } else {
+            return true;
+        }
+    }
     
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -27,12 +50,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         
         BluetoothHandler.getInstance().setMainActivity(this);
         WifiHandler.getInstance().setMainActivity(this);
-    
+        
         BluetoothHandler.getInstance().checkConnection();
         WifiHandler.getInstance().checkConnection();
-    
-        MbotHandler.getInstance().startThread();
-    
+        
+        MbotHandler.getInstance();
+        
         this.bottomNavigation = this.findViewById(R.id.bottom_navigation);
         this.bottomNavigation.setItemIconTintList(null);
         this.bottomNavigation.setOnNavigationItemSelectedListener(this);
@@ -40,21 +63,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         this.openFragment(HomeFragment.newInstance(), "Home");
         this.currentScreen = "Home";
         this.bottomNavigation.setSelectedItemId(R.id.navigation_home);
-    
-        this.checkLocationPermission();
         
-/*        WifiHandler.getInstance().createSession("T", () -> {
-            WifiHandler.getInstance().postPosition(0.1, 0.2, (posId) -> {
-                WifiHandler.getInstance().getLastPosition((id, x, y, sessionId) -> {
-                    Log.i("WIFI", "SESSION POST GET WORKS");
-                });
-            });
-    
-            WifiHandler.getInstance().postCollision(2, 4, () -> {
-                Log.i("WIFI", "COLLISION WORKS");
-            });
-        });*/
-    
+        this.checkLocationPermission();
     }
     
     @Override
@@ -73,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         item.setChecked(true);
         item.setEnabled(true);
-    
+        
         switch (item.getItemId()) {
             case R.id.navigation_steer:
                 this.openFragment(CommandFragment.newInstance(), "Command");
@@ -86,6 +96,23 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 return true;
         }
         return false;
+    }
+    
+    @Override
+    public void onRequestPermissionsResult(final int requestCode, final String[] permissions, final int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    } else {
+                        this.alertDialog();
+                    }
+                } else {
+                    this.alertDialog();
+                }
+                return;
+            }
+        }
     }
     
     private void openFragment(final Fragment fragment, final String toFragment) {
@@ -110,46 +137,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             transaction.addToBackStack(toFragment);
             transaction.commit();
         }
-    }
-    
-    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 1;
-    private boolean checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION);
-            return false;
-        } else {
-            return true;
-        }
-    }
-    
-    @Override
-    public void onRequestPermissionsResult(final int requestCode, final String[] permissions, final int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_LOCATION: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    }
-                    else{
-                        this.alertDialog();
-                    }
-                } else {
-                    this.alertDialog();
-                }
-                return;
-            }
-        }
-    }
-    
-    private void alertDialog(){
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    
-        builder.setTitle("Location Permission")
-                .setMessage("Location Permission is Required To Connect to the Mbot")
-                .setPositiveButton("OK", null);
-                
-        final AlertDialog dialog = builder.create();
-    
-        dialog.show();
     }
 }
 

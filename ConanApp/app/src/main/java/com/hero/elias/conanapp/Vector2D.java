@@ -16,10 +16,6 @@ public class Vector2D {
         this.y = v.y;
     }
     
-    protected Vector2D clone() {
-        return new Vector2D(this);
-    }
-    
     public static double vectorToDegree(Vector2D v) {
         return (Math.atan2(v.x, v.y) * 180.0 / Math.PI);
     }
@@ -47,13 +43,37 @@ public class Vector2D {
         return Math.sqrt(Math.pow(point.x, 2) + Math.pow(point.y, 2));
     }
     
-    public static float dot(Vector2D a, Vector2D b){
-        return (float) ((a.x * b.x ) + (a.y * b.y));
+    public static float dot(Vector2D a, Vector2D b) {
+        return (float) ((a.x * b.x) + (a.y * b.y));
     }
     
     public void add(Vector2D v) {
         this.x += v.x;
         this.y += v.y;
+    }
+    
+    protected Vector2D clone() {
+        return new Vector2D(this);
+    }
+    
+    public void divide(Vector2D v) {
+        this.x /= v.x;
+        this.y /= v.y;
+    }
+    
+    public void divide(double div) {
+        this.x /= div;
+        this.y /= div;
+    }
+    
+    public void multiply(Vector2D v) {
+        this.x *= v.x;
+        this.y *= v.y;
+    }
+    
+    public void multiply(double mul) {
+        this.x *= mul;
+        this.y *= mul;
     }
     
     public void rotate(Vector2D origin, double degrees) {
@@ -68,25 +88,5 @@ public class Vector2D {
     public void subtract(Vector2D v) {
         this.x -= v.x;
         this.y -= v.y;
-    }
-    
-    public void multiply(Vector2D v) {
-        this.x *= v.x;
-        this.y *= v.y;
-    }
-    
-    public void multiply(double mul) {
-        this.x *= mul;
-        this.y *= mul;
-    }
-    
-    public void divide(Vector2D v) {
-        this.x /= v.x;
-        this.y /= v.y;
-    }
-    
-    public void divide(double div) {
-        this.x /= div;
-        this.y /= div;
     }
 }

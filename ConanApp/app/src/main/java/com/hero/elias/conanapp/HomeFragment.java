@@ -1,19 +1,16 @@
 package com.hero.elias.conanapp;
 
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import eo.view.bluetoothstate.BluetoothState;
 
@@ -33,6 +30,15 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
     }
     
     @Override
+    public void bluetoothMessage(final byte[] bytes) {
+    }
+    
+    @Override
+    public void onStateChange(final BluetoothHandler.BluetoothInState state) {
+        this.setState(state);
+    }
+    
+    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
@@ -48,9 +54,9 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
         
         this.bluetoothStateText = view.findViewById(R.id.bluetooth_state_text);
         this.setState(BluetoothHandler.getInstance().getState());
-    
+        
         super.onViewCreated(view, savedInstanceState);
-
+        
         this.createSession = view.findViewById(R.id.createSession);
         this.createSession.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,17 +77,23 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
     }
     
     @Override
-    public void bluetoothMessage(final byte[] bytes) {
+    public void onStateChange(WifiHandler.WifiInState state) {
+        try {
+            if (state.equals(WifiHandler.WifiInState.CONNECTED)/*&& bluetoothState.equals(BluetoothState.State.CONNECTED)*/) {
+                this.createSession.setVisibility(View.VISIBLE);
+            } else {
+                this.createSession.setVisibility(View.INVISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
-    @Override
-    public void onStateChange(final BluetoothHandler.BluetoothInState state) {
-        this.setState(state);
-    }
-    
-    private void setState(final BluetoothHandler.BluetoothInState state){
-        if (this.bluetoothState == null){return;}
-        switch (state){
+    private void setState(final BluetoothHandler.BluetoothInState state) {
+        if (this.bluetoothState == null) {
+            return;
+        }
+        switch (state) {
             case NOTFOUND:
                 this.bluetoothState.setState(BluetoothState.State.SEARCHING);
                 this.bluetoothStateText.setText("Robot Not Found");
@@ -93,8 +105,8 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
             case CONNECTED:
                 this.bluetoothState.setState(BluetoothState.State.CONNECTED);
                 this.bluetoothStateText.setText("Connected !");
-                if (WifiHandler.getInstance().getState().equals(WifiHandler.WifiInState.CONNECTED)){
-                    if(this.createSession != null){
+                if (WifiHandler.getInstance().getState().equals(WifiHandler.WifiInState.CONNECTED)) {
+                    if (this.createSession != null) {
                         createSession.setVisibility(View.VISIBLE);
                     }
                 } else {
@@ -117,18 +129,5 @@ public class HomeFragment extends Fragment implements BluetoothHandler.Bluetooth
         }
     }
     
-    @Override
-    public void onStateChange(WifiHandler.WifiInState state) {
-        try {
-            if (state.equals(WifiHandler.WifiInState.CONNECTED)/*&& bluetoothState.equals(BluetoothState.State.CONNECTED)*/) {
-                this.createSession.setVisibility(View.VISIBLE);
-            } else {
-                this.createSession.setVisibility(View.INVISIBLE);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     
 }

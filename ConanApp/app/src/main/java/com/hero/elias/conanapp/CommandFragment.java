@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class CommandFragment extends Fragment implements BluetoothHandler.BluetoothCallback {
     
@@ -29,7 +30,7 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
     JoyStickClass joystick;
     RelativeLayout layout_joystick;
     String message;
-    int manualOrAutomatic ;
+    int manualOrAutomatic;
     private Button toggle_button;
     int currentDirection = -1;
     int newDirection = -1;
@@ -65,7 +66,7 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         BluetoothHandler.getInstance().addCallback(this);
-    
+        
         this.receiveTextView = view.findViewById(R.id.receive_text);
         super.onViewCreated(view, savedInstanceState);
         
@@ -85,18 +86,17 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
         joystick.setOffset(90);
         joystick.setMinimumDistance(50);
         
-
+        
         layout_joystick.setOnTouchListener((arg0, arg1) -> {
-
+            
             joystick.drawStick(arg1);
-            if(arg1.getAction() == MotionEvent.ACTION_DOWN
-            || arg1.getAction() == MotionEvent.ACTION_MOVE) {
-
+            if (arg1.getAction() == MotionEvent.ACTION_DOWN
+                    || arg1.getAction() == MotionEvent.ACTION_MOVE) {
+                
                 int direction = joystick.get8Direction();
                 newDirection = direction;
-                if(newDirection != currentDirection & direction != 1337){
-                    switch (direction)
-                    {
+                if (newDirection != currentDirection & direction != 1337) {
+                    switch (direction) {
                         case JoyStickClass.STICK_UP:
                             message = "/" + manualOrAutomatic + "," + 0 + "," + 1 + "&";
                             break;
@@ -117,8 +117,8 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
                     currentDirection = direction;
                 }
             }
-
-            if(arg1.getAction() == MotionEvent.ACTION_UP) {
+            
+            if (arg1.getAction() == MotionEvent.ACTION_UP) {
                 message = "/" + manualOrAutomatic + "," + 0 + "," + 0 + "&";
                 sendToRobot(message);
                 currentDirection = -1;
@@ -126,7 +126,7 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
             }
             return true;
         });
-
+        
         toggle_button.setOnClickListener(view1 -> {
             if (toggle_button.getText().equals("AUTOMATIC")) {
                 toggle_button.setText("MANUAL");
@@ -147,12 +147,8 @@ public class CommandFragment extends Fragment implements BluetoothHandler.Blueto
         sendToRobot(message);
         super.onDestroy();
     }
-
-    private void sendToRobot(String message){
-        try {
-            BluetoothHandler.getInstance().write(message.getBytes("US-ASCII"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+    
+    private void sendToRobot(String message) {
+        BluetoothHandler.getInstance().write(message.getBytes(StandardCharsets.US_ASCII));
     }
 }

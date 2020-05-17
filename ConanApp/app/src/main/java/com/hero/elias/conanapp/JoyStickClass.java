@@ -39,7 +39,7 @@ public class JoyStickClass {
     
     private boolean touch_state = false;
     
-    public JoyStickClass (Context context, ViewGroup layout, int stick_res_id) {
+    public JoyStickClass(Context context, ViewGroup layout, int stick_res_id) {
         mContext = context;
         
         stick = BitmapFactory.decodeResource(mContext.getResources(),
@@ -54,6 +54,27 @@ public class JoyStickClass {
         params = mLayout.getLayoutParams();
     }
     
+    private double cal_angle(float x, float y) {
+        if (x >= 0 && y >= 0) {
+            return Math.toDegrees(Math.atan(y / x));
+        } else if (x < 0 && y >= 0) {
+            return Math.toDegrees(Math.atan(y / x)) + 180;
+        } else if (x < 0 && y < 0) {
+            return Math.toDegrees(Math.atan(y / x)) + 180;
+        } else if (x >= 0 && y < 0) {
+            return Math.toDegrees(Math.atan(y / x)) + 360;
+        }
+        return 0;
+    }
+    
+    private void draw() {
+        try {
+            mLayout.removeView(draw);
+        } catch (Exception e) {
+        }
+        mLayout.addView(draw);
+    }
+    
     public void drawStick(MotionEvent arg1) {
         position_x = (int) (arg1.getX() - (params.width / 2));
         position_y = (int) (arg1.getY() - (params.height / 2));
@@ -61,17 +82,17 @@ public class JoyStickClass {
         angle = (float) cal_angle(position_x, position_y);
         
         
-        if(arg1.getAction() == MotionEvent.ACTION_DOWN) {
-            if(distance <= (params.width / 2) - OFFSET) {
+        if (arg1.getAction() == MotionEvent.ACTION_DOWN) {
+            if (distance <= (params.width / 2) - OFFSET) {
                 draw.position(arg1.getX(), arg1.getY());
                 draw();
                 touch_state = true;
             }
-        } else if(arg1.getAction() == MotionEvent.ACTION_MOVE && touch_state) {
-            if(distance <= (params.width / 2) - OFFSET) {
+        } else if (arg1.getAction() == MotionEvent.ACTION_MOVE && touch_state) {
+            if (distance <= (params.width / 2) - OFFSET) {
                 draw.position(arg1.getX(), arg1.getY());
                 draw();
-            } else if(distance > (params.width / 2) - OFFSET){
+            } else if (distance > (params.width / 2) - OFFSET) {
                 float x = (float) (Math.cos(Math.toRadians(cal_angle(position_x, position_y))) * ((params.width / 2) - OFFSET));
                 float y = (float) (Math.sin(Math.toRadians(cal_angle(position_x, position_y))) * ((params.height / 2) - OFFSET));
                 x += (params.width / 2);
@@ -81,64 +102,48 @@ public class JoyStickClass {
             } else {
                 mLayout.removeView(draw);
             }
-        } else if(arg1.getAction() == MotionEvent.ACTION_UP) {
+        } else if (arg1.getAction() == MotionEvent.ACTION_UP) {
             mLayout.removeView(draw);
             touch_state = false;
         }
     }
-
-    
-    public void setMinimumDistance(int minDistance) {
-        min_distance = minDistance;
-    }
-    
-
-    public int get8Direction() {
-        if(distance > min_distance && touch_state) {
-            if(angle >= 247.5 && angle < 292.5 ) {
-                return STICK_UP;
-            }  else if(angle >= 337.5 || angle < 22.5 ) {
-                return STICK_RIGHT;
-            } else if(angle >= 67.5 && angle < 112.5 ) {
-                return STICK_DOWN;
-            }  else if(angle >= 157.5 && angle < 202.5 ) {
-                return STICK_LEFT;
-            }
-        } else if(distance <= min_distance && touch_state) {
-            return STICK_NONE;
-        }
-        return 1337;
-    }
     
     public int get4Direction() {
-        if(distance > min_distance && touch_state) {
-            if(angle >= 225 && angle < 315 ) {
+        if (distance > min_distance && touch_state) {
+            if (angle >= 225 && angle < 315) {
                 return STICK_UP;
-            } else if(angle >= 315 || angle < 45 ) {
+            } else if (angle >= 315 || angle < 45) {
                 return STICK_RIGHT;
-            } else if(angle >= 45 && angle < 135 ) {
+            } else if (angle >= 45 && angle < 135) {
                 return STICK_DOWN;
-            } else if(angle >= 135 && angle < 225 ) {
+            } else if (angle >= 135 && angle < 225) {
                 return STICK_LEFT;
             }
-        } else if(distance <= min_distance && touch_state) {
+        } else if (distance <= min_distance && touch_state) {
             return STICK_NONE;
         }
         return 0;
     }
     
-    public void setOffset(int offset) {
-        OFFSET = offset;
+    public int get8Direction() {
+        if (distance > min_distance && touch_state) {
+            if (angle >= 247.5 && angle < 292.5) {
+                return STICK_UP;
+            } else if (angle >= 337.5 || angle < 22.5) {
+                return STICK_RIGHT;
+            } else if (angle >= 67.5 && angle < 112.5) {
+                return STICK_DOWN;
+            } else if (angle >= 157.5 && angle < 202.5) {
+                return STICK_LEFT;
+            }
+        } else if (distance <= min_distance && touch_state) {
+            return STICK_NONE;
+        }
+        return 1337;
     }
-
     
-    public void setStickAlpha(int alpha) {
-        STICK_ALPHA = alpha;
-        paint.setAlpha(alpha);
-    }
-    
-    public int getStickAlpha() {
-        return STICK_ALPHA;
+    public int getLayoutAlpha() {
+        return LAYOUT_ALPHA;
     }
     
     public void setLayoutAlpha(int alpha) {
@@ -146,19 +151,25 @@ public class JoyStickClass {
         mLayout.getBackground().setAlpha(alpha);
     }
     
-    public int getLayoutAlpha() {
-        return LAYOUT_ALPHA;
+    public int getLayoutHeight() {
+        return params.height;
     }
     
-    public void setStickSize(int width, int height) {
-        stick = Bitmap.createScaledBitmap(stick, width, height, false);
-        stick_width = stick.getWidth();
-        stick_height = stick.getHeight();
+    public int getLayoutWidth() {
+        return params.width;
     }
     
-    public void setStickWidth(int width) {
-        stick = Bitmap.createScaledBitmap(stick, width, stick_height, false);
-        stick_width = stick.getWidth();
+    public int getStickAlpha() {
+        return STICK_ALPHA;
+    }
+    
+    public void setStickAlpha(int alpha) {
+        STICK_ALPHA = alpha;
+        paint.setAlpha(alpha);
+    }
+    
+    public int getStickHeight() {
+        return stick_height;
     }
     
     public void setStickHeight(int height) {
@@ -170,8 +181,9 @@ public class JoyStickClass {
         return stick_width;
     }
     
-    public int getStickHeight() {
-        return stick_height;
+    public void setStickWidth(int width) {
+        stick = Bitmap.createScaledBitmap(stick, width, stick_height, false);
+        stick_width = stick.getWidth();
     }
     
     public void setLayoutSize(int width, int height) {
@@ -179,34 +191,21 @@ public class JoyStickClass {
         params.height = height;
     }
     
-    public int getLayoutWidth() {
-        return params.width;
+    public void setMinimumDistance(int minDistance) {
+        min_distance = minDistance;
     }
     
-    public int getLayoutHeight() {
-        return params.height;
+    public void setOffset(int offset) {
+        OFFSET = offset;
     }
     
-    private double cal_angle(float x, float y) {
-        if(x >= 0 && y >= 0)
-            return Math.toDegrees(Math.atan(y / x));
-        else if(x < 0 && y >= 0)
-            return Math.toDegrees(Math.atan(y / x)) + 180;
-        else if(x < 0 && y < 0)
-            return Math.toDegrees(Math.atan(y / x)) + 180;
-        else if(x >= 0 && y < 0)
-            return Math.toDegrees(Math.atan(y / x)) + 360;
-        return 0;
+    public void setStickSize(int width, int height) {
+        stick = Bitmap.createScaledBitmap(stick, width, height, false);
+        stick_width = stick.getWidth();
+        stick_height = stick.getHeight();
     }
     
-    private void draw() {
-        try {
-            mLayout.removeView(draw);
-        } catch (Exception e) { }
-        mLayout.addView(draw);
-    }
-    
-    private class DrawCanvas extends View{
+    private class DrawCanvas extends View {
         float x, y;
         
         private DrawCanvas(Context mContext) {

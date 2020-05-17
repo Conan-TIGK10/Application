@@ -18,31 +18,35 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class SessionFragment extends Fragment {
-
+    
     private TextView sessionError;
     private EditText submitForm;
     private Button submitButton;
-
+    
+    private void closeFragment() {
+        getActivity().getSupportFragmentManager().popBackStack("Home", 0);
+    }
+    
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
+    
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_session, container, false);
     }
-
+    
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        
         sessionError = view.findViewById(R.id.sessionErrors);
-
+        
         submitForm = view.findViewById(R.id.sessionForm);
-
+        
         submitButton = view.findViewById(R.id.sessionSubmit);
-
+        
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,14 +60,10 @@ public class SessionFragment extends Fragment {
                             closeFragment();
                         }
                     });
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
-    }
-
-    private void closeFragment() {
-        getActivity().getSupportFragmentManager().popBackStack("Home", 0);
     }
 }
