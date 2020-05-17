@@ -96,7 +96,7 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
     private void parseMessage(String message) {
         String[] splitMessage = message.split(",");
         
-        // FORMAT : GYRO,DISTANCE,LIDAR,LIGHT,MILLIS
+        // FORMAT : GYRO,MOVING,LIDAR,LIGHT,MILLIS
         if (splitMessage.length == 5) {
             int gyroData = Integer.parseInt(splitMessage[0]); // -360-360 absolute heading in degrees
             int distData = Integer.parseInt(splitMessage[1]); // 0 = backwards, 1 = turning, 2 = forwards
@@ -159,7 +159,7 @@ public class MbotHandler implements BluetoothHandler.BluetoothCallback, Runnable
                 this.collision = true;
             }
             
-            if ((this.millisCounter - this.timeStamp) > 250) { // send data to backend
+            if ((this.millisCounter - this.timeStamp) > 250) { // send data to backend, every 250 milliseconds
                 this.timeStamp = this.millisCounter;
                 
                 if (this.collision) {

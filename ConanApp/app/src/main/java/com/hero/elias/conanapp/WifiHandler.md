@@ -58,7 +58,7 @@ WifiHandler.getInstance().createSession("name", (noError, message) -> {
 ```
 ## `addCallback(final WifiCallback callback) : void`
 
-**Description** : Register for notificatinons when wifiState has changed
+**Description** : Register for notifications when wifiState has changed
 ### Use:
 
 ```java
@@ -67,7 +67,7 @@ WifiHandler.getInstance().addCallback(this);
 
 ## `removeCallback(final WifiCallback callback) : void`
 
-**Description** : Deregister for notificatinons when wifiState has
+**Description** : Deregister for notifications when wifiState has
 changed
 ### Use:
 
