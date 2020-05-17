@@ -12,7 +12,7 @@
   <h3 align="center">Conan-TIGK10 Backend</h3>
 
   <p align="center" width="50%">
-    An Express.js API written in Typescript and a MySQL database, both containerized and composed with Docker.
+    A mobile application developed with Android Studio
     <br />
   </p>
 </p>
