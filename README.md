@@ -9,7 +9,7 @@
 <p align="center">
    <img src="https://image.flaticon.com/icons/svg/168/168881.svg" alt="Logo" width="100" height="100">
 
-  <h3 align="center">Conan-TIGK10 Backend</h3>
+  <h3 align="center">Conan-TIGK10 Application</h3>
 
   <p align="center" width="50%">
     A mobile application developed with Android Studio
