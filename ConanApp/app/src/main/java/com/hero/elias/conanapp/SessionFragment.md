@@ -4,7 +4,7 @@ The SessionFragment handles the calls from user to the API regarding the creatio
 
 ## `onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState): void`
 
-**Description** : Overrided function that adds functionality to the GUI. This adds a click listener which will call the createSession function from the WifiHandler. If it passes without any errors, the session will be created and the fragment will close, otherwise the error from the API call will be shown in the text message for the session errors.
+**Description** : Overrided function that adds functionality to the GUI. This adds a click listener which will use the input data and then call the createSession function from the WifiHandler. If it passes without any errors, the session will be created and the fragment will close, otherwise the error from the API call will be shown in the text message for the session errors. When there is an error, the fragment will not close and it will be usable again for new input.
 
 ## `closeFragment(): void`
 
