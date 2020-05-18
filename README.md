@@ -23,6 +23,7 @@
 * [MainActivity](https://github.com/Conan-TIGK10/Application/blob/development/ConanApp/app/src/main/java/com/hero/elias/conanapp/MainActivity.md)
 * [MbotHandler](https://github.com/Conan-TIGK10/Application/blob/development/ConanApp/app/src/main/java/com/hero/elias/conanapp/MbotHandler.md)
 * [WifiHandler](https://github.com/Conan-TIGK10/Application/blob/development/ConanApp/app/src/main/java/com/hero/elias/conanapp/WifiHandler.md)
+* [SessionFragment](https://github.com/Conan-TIGK10/Application/blob/development/ConanApp/app/src/main/java/com/hero/elias/conanapp/SessionFragment.md)
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
